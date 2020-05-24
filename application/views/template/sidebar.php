@@ -78,6 +78,56 @@
                 </a>
             </li>
 
+            <li class="menu menu-heading">
+                <div class="heading"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg><span>MANAJEMEN USER</span></div>
+            </li>
+
+            <li class="menu">
+                <a href="<?= base_url(); ?>Dashboard_Admin/listUser" aria-expanded="false" class="dropdown-toggle">
+                    <div class="">
+                        <div class="icon-section">
+                            <i data-feather="user"></i><span class="icon-name"> List User</span>
+                        </div>
+                    </div>
+                </a>
+            </li>
+
+            <li class="menu menu-heading">
+                <div class="heading"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg><span>LAPORAN</span></div>
+            </li>
+
+            <li class="menu">
+                <a href="#laporan" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                    <div class="">
+                        <div class="icon-section">
+                            <i data-feather="book"></i><span class="icon-name"> Laporan</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="icon-section">
+                            <i data-feather="chevron-right"></i>
+                        </div>
+                    </div>
+                </a>
+                <ul class="collapse submenu list-unstyled" id="laporan" data-parent="#accordionExample">
+                    <li>
+                        <a href="<?= base_url(); ?>Dashboard_Admin/laporanAnggota"> Anggota </a>
+                    </li>
+                    <li>
+                        <a href="<?= base_url(); ?>Dashboard_Admin/laporanBuku"> Buku  </a>
+                    </li>
+                    <li>
+                        <a href="<?= base_url(); ?>Dashboard_Admin/laporanSupplier"> Supplier </a>
+                    </li>                            
+                    <li>
+                        <a href="<?= base_url(); ?>Dashboard_Admin/laporanPeminjaman"> Peminjaman </a>
+                    </li>
+                    <li>
+                        <a href="<?= base_url(); ?>Dashboard_Admin/laporanPengembalian"> Pengembalian </a>
+                    </li>
+                </ul>
+            </li>
+
         </ul>
 
     </nav>

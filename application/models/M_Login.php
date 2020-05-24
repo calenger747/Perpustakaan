@@ -8,7 +8,7 @@ class M_Login extends CI_Model{
     }
 
     public function login($username, $password) {
-        $query = $this->db->query("SELECT * FROM table_user WHERE username = '$username' AND password = '$password'");
+        $query = $this->db->query("SELECT * FROM table_user WHERE username = '$username'");
         return $query->row();
     }
 

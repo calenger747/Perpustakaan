@@ -33,50 +33,57 @@ class Login extends CI_Controller {
 		try {
 
 			$username = $this->input->post('username');
-			$password = md5($this->input->post('password'));
+			$password = $this->input->post('password');
 			$data = $this->auth->login($username, $password);
 
 			if($data){
-				$newdata = array(
-					'username'  => $data->username,
-					'nama'  => $data->nama,
-					'level_user' => $data->level,
-					'no_anggota' => $data->no_anggota,
-					'logged_in' => TRUE,
-					'id_user'  => $data->id_user,
-				);
+				$key = 'my-perpus-super-secret-key';
+				$decrypt = $this->encrypt->decode($data->password, $key);
+				if ($password == $decrypt) {
+					$newdata = array(
+						'username'  => $data->username,
+						'nama'  => $data->nama,
+						'level_user' => $data->level,
+						'no_anggota' => $data->no_anggota,
+						'logged_in' => TRUE,
+						'id_user'  => $data->id_user,
+					);
 
-				date_default_timezone_set('Asia/Jakarta');
-				$timestamp  		= date("Y-m-d H:i:s");
+					date_default_timezone_set('Asia/Jakarta');
+					$timestamp  		= date("Y-m-d H:i:s");
 
-				$data2 = array('last_login' => $timestamp,);
-				
-				$this->db->where('id_user', $data->id_user);
-				$this->db->update('table_user', $data2);
+					$data2 = array('last_login' => $timestamp,);
+					
+					$this->db->where('id_user', $data->id_user);
+					$this->db->update('table_user', $data2);
 
-				if ($data->level == '1') {
-					$this->session->set_userdata($newdata);
-					$this->session->set_flashdata('notif','<div class="alert alert-arrow-left alert-icon-left alert-light-primary mb-4" role="alert">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-						<strong>Welcome '.$data->nama.' !</strong> My Perpus Indonesia.
-						</div>');
-					redirect("Dashboard_Admin");
-				} else if ($data->level == '3') {
-					$this->session->set_userdata($newdata);
-					$this->session->set_flashdata('notif','<div class="alert alert-arrow-left alert-icon-left alert-light-primary mb-4" role="alert">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-						<strong>Welcome '.$data->nama.' !</strong> My Perpus Indonesia.
-						</div>');
-					redirect("Dashboard_Kepala");
-				} elseif ($data->level == '2') {
-					$this->session->set_userdata($newdata);
-					$this->session->set_flashdata('notif','<div class="alert alert-arrow-left alert-icon-left alert-light-primary mb-4" role="alert">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-						<strong>Welcome '.$data->nama.' !</strong> My Perpus Indonesia.
-						</div>');
-					redirect("Dashboard_User");
+					if ($data->level == '1') {
+						$this->session->set_userdata($newdata);
+						$this->session->set_flashdata('notif','<div class="alert alert-arrow-left alert-icon-left alert-light-primary mb-4" role="alert">
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+							<strong>Welcome '.$data->nama.' !</strong> My Perpus Indonesia.
+							</div>');
+						redirect("Dashboard_Admin");
+					} else if ($data->level == '3') {
+						$this->session->set_userdata($newdata);
+						$this->session->set_flashdata('notif','<div class="alert alert-arrow-left alert-icon-left alert-light-primary mb-4" role="alert">
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+							<strong>Welcome '.$data->nama.' !</strong> My Perpus Indonesia.
+							</div>');
+						redirect("Dashboard_Kepala");
+					} elseif ($data->level == '2') {
+						$this->session->set_userdata($newdata);
+						$this->session->set_flashdata('notif','<div class="alert alert-arrow-left alert-icon-left alert-light-primary mb-4" role="alert">
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+							<strong>Welcome '.$data->nama.' !</strong> My Perpus Indonesia.
+							</div>');
+						redirect("Dashboard_User");
+					} else {
+						$this->session->set_flashdata("notif", "Maaf Anda Tidak Memiliki Akses Untuk Halaman Ini!");
+						redirect('Login');
+					}
 				} else {
-					$this->session->set_flashdata("notif", "Maaf Anda Tidak Memiliki Akses Untuk Halaman Ini!");
+					$this->session->set_flashdata("notif", "Masukkan Username & Password Dengan Benar");
 					redirect('Login');
 				}
 
@@ -120,6 +127,8 @@ class Login extends CI_Controller {
 			date_default_timezone_set('Asia/Jakarta');
 			$timestamp  		= date("Y-m-d H:i:s");
 
+			$key = 'my-perpus-super-secret-key';
+
 			$no_anggota 		= $this->admin->getKodeAnggota();
 			$tanda_pengenal		= $this->input->post('add_tipe');
 			$no_identitas 		= $this->input->post('add_no_identitas');
@@ -132,6 +141,8 @@ class Login extends CI_Controller {
 			$username 			= $this->input->post('username');
 			$password 			= $this->input->post('password');
 			$confirm 			= $this->input->post('confirm');
+			$no_telp 			= $this->input->post('add_telp');
+			$email 				= $this->input->post('add_email');
 
 			if ($password != $confirm) {
 				$output['error'] = true;
@@ -145,14 +156,16 @@ class Login extends CI_Controller {
 					'fakultas' 			=> ucwords($fakultas),
 					'prodi' 			=> ucwords($prodi),
 					'kelas' 			=> $kelas,
+					'no_hp' 			=> $no_telp,
 					'alamat' 			=> $alamat,
 					'date_created' 		=> $timestamp,
 				);
 
 				$user = array(
 					'username' 		=> $username,
-					'password' 		=> md5($password),
+					'password' 		=> $this->encrypt->encode($password, $key),
 					'nama' 			=> ucwords($nama_anggota),
+					'email' 		=> $email,
 					'level' 		=> '2',
 					'no_anggota' 	=> $no_anggota,
 					'date_created' 	=> $timestamp,

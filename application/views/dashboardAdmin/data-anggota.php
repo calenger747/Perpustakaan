@@ -72,7 +72,7 @@
 					</div>
 					<div class="form-group">
 						<label class="text-dark">Nama Anggota</label>
-						<input type="text" name="add_nama" class="form-control">
+						<input type="text" name="add_nama" class="form-control" required="">
 					</div>
 					<div class="form-group">
 						<label class="text-dark">Kelas</label>
@@ -95,7 +95,7 @@
 					</div>
 					<div class="form-group">
 						<label class="text-dark">Email</label>
-						<input type="text" name="add_email" class="form-control">
+						<input type="email" name="add_email" class="form-control">
 					</div>
 					<div class="form-group">
 						<label class="text-dark">No. Telp</label>
@@ -107,15 +107,15 @@
 					</div>
 					<div class="form-group">
 						<label class="text-dark">Username</label>
-						<input type="text" name="username" id="username" class="form-control">
+						<input type="text" name="username" id="username" class="form-control" required="">
 					</div>
 					<div class="form-group">
 						<label class="text-dark">Password</label>
-						<input type="password" name="password" id="password" class="form-control">
+						<input type="password" name="password" id="password" class="form-control" required="">
 					</div>
 					<div class="form-group">
 						<label class="text-dark">Konfirmasi Password</label>
-						<input type="password" name="confirm" id="confirm" class="form-control">
+						<input type="password" name="confirm" id="confirm" class="form-control" required="">
 						<div class="row mt-1">
 							<div class="col-md-10 text-right">
 								<span>Show Password</span>

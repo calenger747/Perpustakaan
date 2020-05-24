@@ -70,6 +70,14 @@
                                     <input type="text" name="add_prodi" id="add_prodi" class="form-control">
                                 </div>
                                 <div class="field-wrapper form-group">
+                                    <label class="text-dark">EMAIL</label>
+                                    <input type="text" name="add_email" class="form-control">
+                                </div>
+                                <div class="field-wrapper form-group">
+                                    <label class="text-dark">NO. TELP</label>
+                                    <input type="text" name="add_telp" class="form-control">
+                                </div>
+                                <div class="field-wrapper form-group">
                                     <label class="text-dark">ALAMAT</label>
                                     <textarea name="add_alamat" class="form-control"></textarea>
                                 </div>
@@ -164,44 +172,84 @@
             }
         });
 
-        // Add Anggota
+        $("#password").keyup(function(){
+
+            var confirm = $("#confirm").val();
+            var password = $(this).val();
+
+            if (confirm == password) {
+                $("#confirm").css("border-color", "green");
+                $("#password").css("border-color", "green");
+            } else {
+                $("#confirm").css("border-color", "red");
+                $("#password").css("border-color", "red");
+            }
+        });
+
+        $("#confirm").keyup(function(){
+
+            var password = $("#password").val();
+            var confirm = $(this).val();
+
+            if (confirm == password) {
+                $("#confirm").css("border-color", "green");
+                $("#password").css("border-color", "green");
+            } else {
+                $("#confirm").css("border-color", "red");
+                $("#password").css("border-color", "red");
+            }
+        });
+
+        // Register
         $('#textDaftar').html('Get Started!');
         $('#formRegister').on('submit', function(e){  
             e.preventDefault(); 
 
             $('#textDaftar').html('<div class="spinner-border text-white align-self-center loader-sm "></div>');
 
-            $.ajax({  
-                url: base + "Login/daftar",   
-                method:"POST",  
-                data:new FormData(this),  
-                contentType: false,  
-                cache: false,  
-                processData:false,  
-                dataType: "json",
-                success:function(res)  
-                {  
-                    console.log(res.error);
-                    $('#textDaftar').html('Get Started!');
-                    if(res.error == false){  
-                        swal({
-                            title: "Success!",
-                            text: res.message,
-                            type: "success",
-                            timer: 1000,
-                            button: false,
-                        });
-                        $('#formRegister')[0].reset();
-                    }
-                    else if(res.error == true){
-                        swal({
-                            title: "Failed!",
-                            text: res.message,
-                            type: "error",
-                        });
-                    }
-                }  
-            });  
+            var password = $("#password").val();
+            var confirm = $("#confirm").val();
+
+            if (confirm == password) {
+                $.ajax({  
+                    url: base + "Login/daftar",   
+                    method:"POST",  
+                    data:new FormData(this),  
+                    contentType: false,  
+                    cache: false,  
+                    processData:false,  
+                    dataType: "json",
+                    success:function(res)  
+                    {  
+                        console.log(res.error);
+                        $('#textDaftar').html('Get Started!');
+                        if(res.error == false){  
+                            swal({
+                                title: "Success!",
+                                text: res.message,
+                                type: "success",
+                                timer: 1000,
+                                button: false,
+                            });
+                            $('#formRegister')[0].reset();
+                        }
+                        else if(res.error == true){
+                            swal({
+                                title: "Failed!",
+                                text: res.message,
+                                type: "error",
+                            });
+                        }
+                    }  
+                });
+            } else {
+                swal({
+                    title: "Failed!",
+                    text: "Konfirmasi Password Tidak Sama!",
+                    type: "error",
+                });
+                $('#textDaftar').html('Get Started!');
+            }
         });
     });
 </script>

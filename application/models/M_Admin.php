@@ -22,6 +22,11 @@ class M_Admin extends CI_Model{
     var $column_order_4 = array('nama_supplier','email','no_telp','fax','alamat'); //set column field database for datatable orderable 
     var $column_search_4 = array('nama_supplier','email','no_telp','fax','alamat'); //set column field database for datatable searchable 
     var $order_4 = array('id_supplier' => 'ASC'); // default order 
+
+    var $table_5 = 'table_user'; 
+    var $column_order_5 = array('nama','email','username','level'); //set column field database for datatable orderable 
+    var $column_search_5 = array('nama','email','username','level'); //set column field database for datatable searchable 
+    var $order_5 = array('id_user' => 'ASC'); // default order 
  
     public function __construct()
     {
@@ -320,6 +325,69 @@ class M_Admin extends CI_Model{
     public function supplier_all()
     {
         $this->db->from($this->table_4);
+        return $this->db->count_all_results();
+    }
+
+    // Data User
+    private function user_query()
+    {
+         
+        $this->db->from($this->table_5);
+        $this->db->order_by('id_user','ASC');
+ 
+        $i = 0;
+     
+        foreach ($this->column_search_5 as $item) // loop column 
+        {
+            if($_POST['search']['value']) // if datatable send POST for search
+            {
+                 
+                if($i===0) // first loop
+                {
+                    $this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
+                    $this->db->like($item, $_POST['search']['value']);
+                }
+                else
+                {
+                    $this->db->or_like($item, $_POST['search']['value']);
+                }
+ 
+                if(count($this->column_search_5) - 1 == $i) //last loop
+                    $this->db->group_end(); //close bracket
+            }
+            $i++;
+        }
+         
+        if(isset($_POST['order_5'])) // here order processing
+        {
+            $this->db->order_by($this->column_order_5[$_POST['order_5']['0']['column_5']], $_POST['order_5']['0']['dir']);
+        } 
+        else if(isset($this->order_5))
+        {
+            $order_5 = $this->order_5;
+            $this->db->order_by(key($order_5), $order_5[key($order_5)]);
+        }
+    }
+ 
+    function datatable_user()
+    {
+        $this->user_query();
+        if($_POST['length'] != -1)
+        $this->db->limit($_POST['length'], $_POST['start']);
+        $query = $this->db->get();
+        return $query->result();
+    }
+ 
+    function user_filtered()
+    {
+        $this->user_query();
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
+ 
+    public function user_all()
+    {
+        $this->db->from($this->table_5);
         return $this->db->count_all_results();
     }
 }

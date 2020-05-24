@@ -128,6 +128,72 @@ class Dashboard_Admin extends CI_Controller {
 		$this->load->view('template/default_template', $data);
 	}
 
+	public function listUser()
+	{	
+		$get = "";
+		$path = "";
+		$data = array(
+			"page" => $this->load("Dashboard Admin - Manajemen User", $path),
+			"content" =>$this->load->view('dashboardAdmin/list-user', false, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function laporanAnggota()
+	{	
+		$get = "";
+		$path = "";
+		$data = array(
+			"page" => $this->load("Dashboard Admin - Laporan Anggota", $path),
+			"content" =>$this->load->view('dashboardAdmin/laporan/laporan-anggota', false, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function laporanBuku()
+	{	
+		$get = "";
+		$path = "";
+		$data = array(
+			"page" => $this->load("Dashboard Admin - Laporan Buku", $path),
+			"content" =>$this->load->view('dashboardAdmin/laporan/laporan-buku', false, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function laporanSupplier()
+	{	
+		$get = "";
+		$path = "";
+		$data = array(
+			"page" => $this->load("Dashboard Admin - Laporan Supplier", $path),
+			"content" =>$this->load->view('dashboardAdmin/laporan/laporan-supplier', false, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function laporanPeminjaman()
+	{	
+		$get = "";
+		$path = "";
+		$data = array(
+			"page" => $this->load("Dashboard Admin - Laporan Peminjaman", $path),
+			"content" =>$this->load->view('dashboardAdmin/laporan/laporan-peminjaman', false, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function laporanPengembalian()
+	{	
+		$get = "";
+		$path = "";
+		$data = array(
+			"page" => $this->load("Dashboard Admin - Laporan Pengembalian", $path),
+			"content" =>$this->load->view('dashboardAdmin/laporan/laporan-pengembalian', false, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
 	// Add Kategori
 	public function addKategori()
 	{
@@ -359,6 +425,8 @@ class Dashboard_Admin extends CI_Controller {
 			date_default_timezone_set('Asia/Jakarta');
 			$timestamp  		= date("Y-m-d H:i:s");
 
+			$key = 'my-perpus-super-secret-key';
+
 			// $no_anggota 		= $this->input->post('add_no_anggota');
 			$no_anggota 		= $this->admin->getKodeAnggota();
 			$tanda_pengenal		= $this->input->post('add_tipe');
@@ -390,7 +458,7 @@ class Dashboard_Admin extends CI_Controller {
 
 			$user = array(
 				'username' 		=> $username,
-				'password' 		=> md5($password),
+				'password' 		=> $this->encrypt->encode($password, $key),
 				'nama' 			=> ucwords($nama_anggota),
 				'email' 		=> $email,
 				'level' 		=> '2',
@@ -473,6 +541,7 @@ class Dashboard_Admin extends CI_Controller {
 			$delete = $this->db->delete('table_anggota',['no_anggota'=>$id_ref]);
 
 			if ($delete == TRUE) {
+				$d_user = $this->db->delete('table_user',['no_anggota'=>$id_ref]);
 				$output['message'] = 'Data has been deleted!';
 			} else {
 				$output['error'] = true;
@@ -563,7 +632,7 @@ class Dashboard_Admin extends CI_Controller {
 		}
 	}
 
-	// Delete Anggota
+	// Delete Supplier
 	public function deleteSupplier($id)
 	{
 		try {
@@ -582,6 +651,187 @@ class Dashboard_Admin extends CI_Controller {
 			echo json_encode($output);
 		} catch (Exception $e) {
 			redirect('dashboard/category');
+		}
+	}
+
+	// Add User
+	public function addUser()
+	{
+		try {
+			$output = array('error' => false);
+			date_default_timezone_set('Asia/Jakarta');
+			$timestamp  		= date("Y-m-d H:i:s");
+
+			$key = 'my-perpus-super-secret-key';
+
+			$nama 			= $this->input->post('add_nama');
+			$username		= $this->input->post('username');
+			$email 			= $this->input->post('add_email');
+			$level 			= $this->input->post('add_level');
+			$password 		= $this->input->post('password');
+
+			$data = array(
+				'nama' 			=> ucwords($nama),
+				'username' 		=> $username,
+				'email' 		=> $email,
+				'level' 		=> $level,
+				'password' 		=> $this->encrypt->encode($password, $key),
+				'date_created' 	=> $timestamp,
+			);
+
+			$add = $this->db->insert('table_user', $data);
+			if ($add == TRUE) {
+				$output['message'] = 'Data Berhasil Disimpan!';
+			} else {
+				$output['error'] = true;
+				$output['message'] = 'Data Gagal Disimpan!';
+			}
+
+			echo json_encode($output);
+
+		} catch (Exception $e) {
+			
+		}
+	}
+
+	// Edit User
+	public function editUser()
+	{
+		try {
+			$output = array('error' => false);
+			date_default_timezone_set('Asia/Jakarta');
+			$timestamp  		= date("Y-m-d H:i:s");
+
+			$key = 'my-perpus-super-secret-key';
+
+			$id_user		= $this->input->post('edit_id');
+			$nama 			= $this->input->post('edit_nama');
+			$username		= $this->input->post('edit_username');
+			$email 			= $this->input->post('edit_email');
+			$level 			= $this->input->post('edit_level');
+			$password 		= $this->input->post('edit_password');
+			
+
+			$data = array(
+				'nama' 			=> ucwords($nama),
+				'username' 		=> $username,
+				'email' 		=> $email,
+				'level' 		=> $level,
+				'password' 		=> $this->encrypt->encode($password, $key),
+			);
+
+			$this->db->where('id_user', $id_user);
+			$update = $this->db->update('table_user', $data);
+			if ($update == TRUE) {
+				$output['message'] = 'Data Berhasil Disimpan!';
+			} else {
+				$output['error'] = true;
+				$output['message'] = 'Data Gagal Disimpan!';
+			}
+
+			echo json_encode($output);
+
+		} catch (Exception $e) {
+			
+		}
+	}
+
+	// Delete User
+	public function deleteUser($id)
+	{
+		try {
+			$output = array('error' => false);
+
+			$id_ref = $id;
+			$delete = $this->db->delete('table_user',['id_user'=>$id_ref]);
+
+			if ($delete == TRUE) {
+				$output['message'] = 'Data has been deleted!';
+			} else {
+				$output['error'] = true;
+				$output['message'] = 'Data Failed to Delete!';
+			}
+
+			echo json_encode($output);
+		} catch (Exception $e) {
+			redirect('dashboard/category');
+		}
+	}
+
+	// Edit Profile
+	public function editProfile()
+	{
+		try {
+			$output = array('error' => false);
+			date_default_timezone_set('Asia/Jakarta');
+			$timestamp  		= date("Y-m-d H:i:s");
+
+			$id_user		= $this->input->post('edit_id');
+			$nama 			= $this->input->post('edit_nama');
+			$username		= $this->input->post('edit_username');
+			$email 			= $this->input->post('edit_email');
+			
+
+			$data = array(
+				'nama' 			=> ucwords($nama),
+				'username' 		=> $username,
+				'email' 		=> $email,
+			);
+
+			$this->db->where('id_user', $id_user);
+			$update = $this->db->update('table_user', $data);
+			if ($update == TRUE) {
+				$output['message'] = 'Data Berhasil Disimpan!';
+			} else {
+				$output['error'] = true;
+				$output['message'] = 'Data Gagal Disimpan!';
+			}
+
+			echo json_encode($output);
+
+		} catch (Exception $e) {
+			
+		}
+	}
+
+	// Edit Password
+	public function editPassword()
+	{
+		try {
+			$output = array('error' => false);
+			date_default_timezone_set('Asia/Jakarta');
+			$timestamp  		= date("Y-m-d H:i:s");
+
+			$key = 'my-perpus-super-secret-key';
+
+			$id_user		= $this->input->post('edit_id');
+			$old_password 	= $this->input->post('old_password');
+			$new_password	= $this->input->post('new_password');
+			
+			$_id = $this->db->get_where('table_user',['id_user' => $id_user])->row();
+			$password = $this->encrypt->decode($_id->password, $key);
+
+			if ($password == $old_password) {
+				$data = array(
+					'password' 	=> $this->encrypt->encode($new_password, $key),
+				);
+
+				$this->db->where('id_user', $id_user);
+				$update = $this->db->update('table_user', $data);
+				if ($update == TRUE) {
+					$output['message'] = 'Password Berhasil Diubah!';
+				} else {
+					$output['error'] = true;
+					$output['message'] = 'Password Gagal Diubah!';
+				}
+			} else {
+				$output['error'] = true;
+				$output['message'] = 'Password Lama Salah!';
+			}
+			echo json_encode($output);
+
+		} catch (Exception $e) {
+			
 		}
 	}
 }

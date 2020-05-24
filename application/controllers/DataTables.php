@@ -161,6 +161,74 @@ class DataTables extends CI_Controller {
 		echo json_encode($output);
 	}
 
+	// Data Supplier
+	public function showUser()
+	{
+		$session = $_POST['id_user'];
+
+		$list = $this->admin->datatable_user();
+		$data = array();
+		$no = $_POST['start'];
+
+		$key = 'my-perpus-super-secret-key';
+
+		foreach ($list as $user) {
+			$no++;
+
+			if ($user->level == '1') {
+				$level = 'Administrator';
+			} else if ($user->level == '2') {
+				$level = 'Anggota';
+			} else if ($user->level == '3') {
+				$level = 'Kepala Perpustakaan';
+			}
+
+			if ($session == $user->id_user) {
+				$hapus = '';
+			} else {
+				$hapus = '<button
+				class="btn btn-sm btn-danger hapus-user" 
+				data-toggle="modal"
+				id="id" 
+				data-toggle="modal" 
+				data-id_user="'.$user->id_user.'"
+				title="Hapus Data">
+				<i class="fa fa-trash"></i>
+				</button>';
+			}
+
+			$row = array();
+			$row[] = $no;
+			$row[] = $user->username;
+			$row[] = $user->nama;
+			$row[] = $user->email;
+			$row[] = $level;
+			$row[] = '<a
+			href="javascript:void(0)"
+			data-id_user="'.$user->id_user.'"
+			data-nama_user="'.$user->nama.'"
+			data-email="'.$user->email.'"
+			data-level="'.$user->level.'"
+			data-username="'.$user->username.'"
+			data-password="'.$this->encrypt->decode($user->password, $key).'"
+			data-toggle="modal" data-target="#myEditUser"
+			title="Edit Data">
+			<button class="btn btn-sm btn-success"><i class="fa fa-edit"></i></button>
+			</a>'.$hapus;
+
+			$data[] = $row;
+		}
+
+		$output = array(
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $this->admin->user_all(),
+			"recordsFiltered" => $this->admin->user_filtered(),
+			"data" => $data,
+		);
+        //output to json format
+		echo json_encode($output);
+	}
+
 	// Data Anggota
 	public function showSupplier()
 	{
