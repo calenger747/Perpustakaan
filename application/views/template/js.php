@@ -33,4 +33,8 @@
 <script src="<?= base_url(); ?>app-assets/plugins/lightbox/photoswipe.min.js"></script>
 <script src="<?= base_url(); ?>app-assets/plugins/lightbox/photoswipe-ui-default.min.js"></script>
 <script src="<?= base_url(); ?>app-assets/plugins/lightbox/custom-photswipe.js"></script>
+
+<script src="<?= base_url(); ?>app-assets/assets/js/apps/invoice.js"></script>
+
+<script src="<?= base_url(); ?>app-assets/assets/js/components/ui-accordions.js"></script>
 <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->

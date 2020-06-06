@@ -105,6 +105,59 @@ class Dashboard_Admin extends CI_Controller {
 		$this->load->view('template/default_template', $data);
 	}
 
+	public function tambahPinjaman()
+	{
+		$get = array(
+			"anggota" => $this->admin->data_anggota(),
+			"buku" => $this->admin->data_buku(),
+			"no_pinjam" => $this->admin->getKodePinjaman(),
+		);
+		$path = "";
+		$data = array(
+			"page" => $this->load("Dashboard Admin - Tambah Pinjaman", $path),
+			"content" =>$this->load->view('dashboardAdmin/tambah-pinjaman', $get, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function editPinjaman($no_pinjaman)
+	{
+		$get = array(
+			"anggota" => $this->admin->data_anggota(),
+			"buku" => $this->admin->data_buku(),
+			"pinjaman" => $this->admin->data_peminjaman($no_pinjaman),
+		);
+		$path = "";
+		$data = array(
+			"page" => $this->load("Dashboard Admin - Edit Pinjaman", $path),
+			"content" =>$this->load->view('dashboardAdmin/edit-pinjaman', $get, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function detailPinjaman($no_pinjaman)
+	{
+		$get = array(
+			"pinjaman" => $this->admin->data_peminjaman($no_pinjaman),
+			"detail" => $this->admin->detail_peminjaman($no_pinjaman),
+		);
+		$path = "";
+		$data = array(
+			"page" => $this->load("Dashboard Admin - Detail Pinjaman", $path),
+			"content" =>$this->load->view('dashboardAdmin/detail-pinjaman', $get, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function cetakInvoice($no_pinjaman)
+	{
+		$get = array(
+			"pinjaman" => $this->admin->data_peminjaman($no_pinjaman),
+			"detail" => $this->admin->detail_peminjaman($no_pinjaman),
+		);
+		$this->load->view('dashboardAdmin/cetak-invoice', $get);
+	}
+
 	public function Pengembalian()
 	{
 		$path = "";
@@ -113,6 +166,29 @@ class Dashboard_Admin extends CI_Controller {
 			"content" =>$this->load->view('dashboardAdmin/data-pengembalian', false, true)
 		);
 		$this->load->view('template/default_template', $data);
+	}
+
+	public function tambahPengembalian()
+	{
+		$get = array(
+			"pinjaman" => $this->admin->data_pinjaman(),
+			"no_kembali" => $this->admin->getKodeKembali(),
+		);
+		$path = "";
+		$data = array(
+			"page" => $this->load("Dashboard Admin - Tambah Pengembalian", $path),
+			"content" =>$this->load->view('dashboardAdmin/tambah-pengembalian', $get, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function cetakInvoiceKembali($no_kembali, $no_pinjaman)
+	{
+		$get = array(
+			"pinjaman" => $this->admin->data_peminjaman($no_kembali),
+			"detail" => $this->admin->detail_peminjaman($no_pinjaman),
+		);
+		$this->load->view('dashboardAdmin/cetak-invoice', $get);
 	}
 
 	public function myProfile()
@@ -161,17 +237,6 @@ class Dashboard_Admin extends CI_Controller {
 		$this->load->view('template/default_template', $data);
 	}
 
-	public function laporanSupplier()
-	{	
-		$get = "";
-		$path = "";
-		$data = array(
-			"page" => $this->load("Dashboard Admin - Laporan Supplier", $path),
-			"content" =>$this->load->view('dashboardAdmin/laporan/laporan-supplier', false, true)
-		);
-		$this->load->view('template/default_template', $data);
-	}
-
 	public function laporanPeminjaman()
 	{	
 		$get = "";
@@ -192,6 +257,37 @@ class Dashboard_Admin extends CI_Controller {
 			"content" =>$this->load->view('dashboardAdmin/laporan/laporan-pengembalian', false, true)
 		);
 		$this->load->view('template/default_template', $data);
+	}
+
+	// Get Nama Buku
+	public function getNamaBuku()
+	{
+		$id_buku = $this->input->post('id_buku');
+
+		$data = $this->admin->get_nama_buku($id_buku);
+
+		$output = array();
+		$output['nama'] = $data->nama_buku;
+		$output['stok'] = $data->stok;
+
+		echo json_encode($output);
+
+	}
+	// Get Nama Peminjam
+	public function getNamaPeminjam()
+	{
+		$no_pinjaman = $this->input->post('no_pinjaman');
+
+		$data = $this->admin->data_peminjaman($no_pinjaman);
+
+		$output = array();
+		$output['nama_anggota'] = $data->nama_anggota;
+		$output['tgl_pinjam'] = $data->tgl_pinjam;
+		$output['no_anggota'] = $data->no_anggota;
+		$output['total_pinjam'] = $data->total_pinjam;
+
+		echo json_encode($output);
+
 	}
 
 	// Add Kategori
@@ -458,7 +554,7 @@ class Dashboard_Admin extends CI_Controller {
 
 			$user = array(
 				'username' 		=> $username,
-				'password' 		=> $this->encrypt->encode($password, $key),
+				'password' 		=> $this->encryption->encrypt($password),
 				'nama' 			=> ucwords($nama_anggota),
 				'email' 		=> $email,
 				'level' 		=> '2',
@@ -675,7 +771,7 @@ class Dashboard_Admin extends CI_Controller {
 				'username' 		=> $username,
 				'email' 		=> $email,
 				'level' 		=> $level,
-				'password' 		=> $this->encrypt->encode($password, $key),
+				'password' 		=> $this->encryption->encrypt($password),
 				'date_created' 	=> $timestamp,
 			);
 
@@ -717,7 +813,7 @@ class Dashboard_Admin extends CI_Controller {
 				'username' 		=> $username,
 				'email' 		=> $email,
 				'level' 		=> $level,
-				'password' 		=> $this->encrypt->encode($password, $key),
+				'password' 		=> $this->encryption->encrypt($password),
 			);
 
 			$this->db->where('id_user', $id_user);
@@ -758,33 +854,57 @@ class Dashboard_Admin extends CI_Controller {
 		}
 	}
 
-	// Edit Profile
-	public function editProfile()
+
+	// Add Cart
+	public function addCart()
 	{
 		try {
 			$output = array('error' => false);
 			date_default_timezone_set('Asia/Jakarta');
 			$timestamp  		= date("Y-m-d H:i:s");
 
-			$id_user		= $this->input->post('edit_id');
-			$nama 			= $this->input->post('edit_nama');
-			$username		= $this->input->post('edit_username');
-			$email 			= $this->input->post('edit_email');
-			
+			$no_anggota 	= $this->input->post('no_anggota');
+			$id_buku		= $this->input->post('id_buku');
+			$jumlah 		= $this->input->post('qty');
+			$stok 			= $this->input->post('stok');
 
-			$data = array(
-				'nama' 			=> ucwords($nama),
-				'username' 		=> $username,
-				'email' 		=> $email,
-			);
-
-			$this->db->where('id_user', $id_user);
-			$update = $this->db->update('table_user', $data);
-			if ($update == TRUE) {
-				$output['message'] = 'Data Berhasil Disimpan!';
-			} else {
+			$cek_jumlah = $this->admin->cekQtyJumlah($no_anggota)->row();
+			$validasi = $this->admin->cekCart($no_anggota, $id_buku)->row();
+			if ($cek_jumlah->qty >= 3) {
 				$output['error'] = true;
-				$output['message'] = 'Data Gagal Disimpan!';
+				$output['message'] = 'Jumlah Maksimal Buku Dipinjam Adalah 3';
+			} else {
+				if ($validasi) {
+					$qty = $validasi->qty + $jumlah;
+					if ($qty > $validasi->stok) {
+						$output['error'] = true;
+						$output['message'] = 'Stok Buku "'.$validasi->nama_buku.'" Hanya Ada '.$stok.'!';
+					} else {
+						if ($qty >= 3) {
+							$output['error'] = true;
+							$output['message'] = 'Jumlah Maksimal Buku Dipinjam Adalah 3';
+						} else {
+							$id_cart = $validasi->id_cart;
+
+							$data = array(
+								'qty' 		=> $qty,
+							);
+
+							$this->db->where('id_cart', $id_cart);
+							$this->db->update('table_cart', $data);
+						}
+					}
+				} else {
+					$qty = $jumlah;
+
+					$data = array(
+						'no_anggota' => $no_anggota,
+						'id_buku' 	=> $id_buku,
+						'qty' 		=> $qty,
+					);
+
+					$add = $this->db->insert('table_cart', $data);
+				}
 			}
 
 			echo json_encode($output);
@@ -794,44 +914,585 @@ class Dashboard_Admin extends CI_Controller {
 		}
 	}
 
-	// Edit Password
-	public function editPassword()
+	// Update Cart
+	public function updateCart()
 	{
 		try {
 			$output = array('error' => false);
 			date_default_timezone_set('Asia/Jakarta');
 			$timestamp  		= date("Y-m-d H:i:s");
 
-			$key = 'my-perpus-super-secret-key';
+			$id_cart 		= $this->input->post('id_cart');
+			$no_anggota 	= $this->input->post('no_anggota');
+			$id_buku 		= $this->input->post('id_buku');
+			$jumlah 		= $this->input->post('qty');
+			$qty_lama 		= $this->input->post('qty_lama');
+			$stok 			= $this->input->post('stok');
 
-			$id_user		= $this->input->post('edit_id');
-			$old_password 	= $this->input->post('old_password');
-			$new_password	= $this->input->post('new_password');
-			
-			$_id = $this->db->get_where('table_user',['id_user' => $id_user])->row();
-			$password = $this->encrypt->decode($_id->password, $key);
+			$cek_jumlah = $this->admin->cekQtyJumlah($no_anggota)->row();
+			$validasi = $this->admin->cekCart($no_anggota, $id_buku)->row();
+			$total = ($cek_jumlah->qty - $qty_lama) + $jumlah;
 
-			if ($password == $old_password) {
-				$data = array(
-					'password' 	=> $this->encrypt->encode($new_password, $key),
-				);
-
-				$this->db->where('id_user', $id_user);
-				$update = $this->db->update('table_user', $data);
-				if ($update == TRUE) {
-					$output['message'] = 'Password Berhasil Diubah!';
-				} else {
+			if ($cek_jumlah->qty > 3) {
+				$output['error'] = true;
+				$output['message'] = 'Jumlah Maksimal Buku Dipinjam Adalah 3';
+			} else {
+				if ($jumlah > $validasi->stok) {
 					$output['error'] = true;
-					$output['message'] = 'Password Gagal Diubah!';
+					$output['message'] = 'Stok Buku "'.$validasi->nama_buku.'" Hanya Ada '.$stok.'!';
+				} else {
+					if ($total > 3) {
+						$output['error'] = true;
+						$output['message'] = 'Jumlah Maksimal Buku Dipinjam Adalah 3';
+					} else {
+						$data = array(
+							'qty' 		=> $jumlah,
+						);
+
+						$this->db->where('id_cart', $id_cart);
+						$this->db->update('table_cart', $data);
+
+						$output['message'] = 'Data Berhasil Disimpan!';
+					}
 				}
+			}
+
+			echo json_encode($output);
+
+		} catch (Exception $e) {
+
+		}
+	}
+
+	// Delete Cart
+	public function deleteCart($id)
+	{
+		try {
+			$output = array('error' => false);
+
+			$id_ref = $id;
+			$delete = $this->db->delete('table_cart',['id_cart'=>$id_ref]);
+
+			if ($delete == TRUE) {
+				$output['message'] = 'Data has been deleted!';
 			} else {
 				$output['error'] = true;
-				$output['message'] = 'Password Lama Salah!';
+				$output['message'] = 'Data Failed to Delete!';
 			}
+
+			echo json_encode($output);
+		} catch (Exception $e) {
+
+		}
+	}
+
+	// Kode Pinjaman
+	public function kodePinjaman()
+	{
+		$no_pinjam = $this->admin->getKodePinjaman();
+		echo $no_pinjam;
+	}
+
+	// Add Pinjaman
+	public function addPinjaman()
+	{
+		try {
+			$output = array('error' => false);
+			date_default_timezone_set('Asia/Jakarta');
+			$timestamp  		= date("Y-m-d H:i:s");
+
+			$date 			= date("Y-m-d");
+			$exp_date  		= date('Y-m-d', strtotime($date. ' + 7 days'));
+
+			$no_pinjam		= $this->input->post('no_pinjam');
+			$no_anggota 	= $this->input->post('no_anggota');
+
+			$cek_jumlah = $this->admin->cekQtyJumlah($no_anggota)->row();
+			$total_pinjam = $cek_jumlah->qty;
+
+			$cart = $this->admin->dataCart($no_anggota)->result();
+			$num = $this->admin->dataCart($no_anggota)->num_rows();
+			if ($num < 1) {
+				$output['error'] = true;
+				$output['message'] = 'Buku Belum Didaftarkan';
+			} else {
+				foreach ($cart as $row) {
+
+					$detail = array(
+						'no_pinjaman'	=> $no_pinjam,
+						'id_buku'		=> $row->id_buku,
+						'qty'			=> $row->qty,
+						'expired_date'	=> $exp_date,
+						'denda'			=> 0,
+						'status'		=> 'Pinjam',
+					);
+					$data_detail[] = $detail;
+
+					$stok = $row->stok - $row->qty;
+					$d_stok = array(
+						'id_buku'		=> $row->id_buku,
+						'stok'			=> $stok,
+					);
+					$data_stok[] = $d_stok;
+				}
+
+				$data_pinjam = array(
+					'no_pinjaman' 	=> $no_pinjam,
+					'tgl_pinjam'	=> $timestamp,
+					'no_anggota'	=> $no_anggota,
+					'total_pinjam'	=> $total_pinjam,
+					'status'		=> 'Dipinjam',
+					'notif' 		=> '0',
+				);
+
+				$input_detail = $this->db->insert_batch('table_pinjaman_detail', $data_detail);
+				if ($input_detail == TRUE) {
+					$pinjam = $this->db->insert('table_pinjaman', $data_pinjam);
+					if ($pinjam == TRUE) {
+						$update_stok = $this->db->update_batch('table_buku', $data_stok, 'id_buku');
+						if ($update_stok == TRUE) {
+							$delete = $this->db->delete('table_cart',['no_anggota'=>$no_anggota]);
+							$output['message'] = 'Data Berhasil Disimpan!';
+						} else {
+							$output['error'] = true;
+							$output['message'] = 'Data Gagal Disimpan!';
+						}
+					} else {
+						$output['error'] = true;
+						$output['message'] = 'Data Gagal Disimpan!';
+					}
+				} else {
+					$output['error'] = true;
+					$output['message'] = 'Data Gagal Disimpan!';
+				}
+			}
+
+			echo json_encode($output);
+
+		} catch (Exception $e) {
+
+		}
+	}
+
+	// Update Pinjaman
+	public function updatePinjaman()
+	{
+		try {
+			$output = array('error' => false);
+			date_default_timezone_set('Asia/Jakarta');
+			$timestamp  		= date("Y-m-d H:i:s");
+
+			$date 			= date("Y-m-d");
+			$exp_date  		= date('Y-m-d', strtotime($date. ' + 7 days'));
+
+			$no_pinjam		= $this->input->post('no_pinjam');
+			$no_anggota 	= $this->input->post('no_anggota');
+
+			$cek_jumlah = $this->admin->cekQtyJumlah($no_anggota)->row();
+			$total_pinjam = $cek_jumlah->qty;
+
+			$cart = $this->admin->dataCart($no_anggota)->result();
+			$num = $this->admin->dataCart($no_anggota)->num_rows();
+			if ($num < 1) {
+				$output['error'] = true;
+				$output['message'] = 'Buku Belum Didaftarkan';
+			} else {
+				foreach ($cart as $row) {
+
+					$detail = array(
+						'no_pinjaman'	=> $no_pinjam,
+						'id_buku'		=> $row->id_buku,
+						'qty'			=> $row->qty,
+						'expired_date'	=> $exp_date,
+						'denda'			=> 0,
+						'status_detail'		=> 'Pinjam',
+					);
+					$data_detail[] = $detail;
+
+					$stok = $row->stok - $row->qty;
+					$d_stok = array(
+						'id_buku'		=> $row->id_buku,
+						'stok'			=> $stok,
+					);
+					$data_stok[] = $d_stok;
+				}
+
+				$data_pinjam = array(
+					'no_pinjaman' 	=> $no_pinjam,
+					'tgl_pinjam'	=> $timestamp,
+					'no_anggota'	=> $no_anggota,
+					'total_pinjam'	=> $total_pinjam,
+					'status'		=> 'Dipinjam',
+					'notif' 		=> '0',
+				);
+
+				$input_detail = $this->db->insert_batch('table_pinjaman_detail', $data_detail);
+				if ($input_detail == TRUE) {
+					$this->db->where('no_pinjaman', $no_pinjam);
+					$pinjam = $this->db->update('table_pinjaman', $data_pinjam);
+					if ($pinjam == TRUE) {
+						$update_stok = $this->db->update_batch('table_buku', $data_stok, 'id_buku');
+						if ($update_stok == TRUE) {
+							$delete = $this->db->delete('table_cart',['no_anggota'=>$no_anggota]);
+							$output['message'] = 'Data Berhasil Disimpan!';
+						} else {
+							$output['error'] = true;
+							$output['message'] = 'Data Gagal Disimpan!';
+						}
+					} else {
+						$output['error'] = true;
+						$output['message'] = 'Data Gagal Disimpan!';
+					}
+				} else {
+					$output['error'] = true;
+					$output['message'] = 'Data Gagal Disimpan!';
+				}
+			}
+
+			echo json_encode($output);
+
+		} catch (Exception $e) {
+
+		}
+	}
+
+	// Add Detail
+	public function addDetail()
+	{
+		try {
+			$output = array('error' => false);
+			date_default_timezone_set('Asia/Jakarta');
+			$timestamp  		= date("Y-m-d H:i:s");
+
+			$date 			= date("Y-m-d");
+			$exp_date  		= date('Y-m-d', strtotime($date. ' + 7 days'));
+
+			$no_pinjaman 	= $this->input->post('no_pinjaman');
+			$id_buku		= $this->input->post('id_buku');
+			$jumlah 		= $this->input->post('qty');
+			$stok 			= $this->input->post('stok');
+
+			$cek_jumlah = $this->admin->cekQtyDetail($no_pinjaman)->row();
+			$validasi = $this->admin->cekDetail($no_pinjaman, $id_buku)->row();
+			if ($cek_jumlah->qty >= 3) {
+				$output['error'] = true;
+				$output['message'] = 'Jumlah Maksimal Buku Dipinjam Adalah 3';
+			} else {
+				if ($validasi) {
+					$qty = $validasi->qty + $jumlah;
+					if ($qty > $validasi->stok) {
+						$output['error'] = true;
+						$output['message'] = 'Stok Buku "'.$validasi->nama_buku.'" Hanya Ada '.$stok.'!';
+					} else {
+						if ($qty >= 3) {
+							$output['error'] = true;
+							$output['message'] = 'Jumlah Maksimal Buku Dipinjam Adalah 3';
+						} else {
+							$id_detail = $validasi->id_detail;
+
+							$data = array(
+								'qty' 		=> $qty,
+								'expired_date' 	=> $exp_date,
+							);
+
+							$this->db->where('id_detail', $id_detail);
+							$this->db->update('table_pinjaman_detail', $data);
+						}
+					}
+				} else {
+					$qty = $jumlah;
+
+					$data = array(
+						'no_pinjaman' 	=> $no_pinjaman,
+						'id_buku' 		=> $id_buku,
+						'qty' 			=> $qty,
+						'expired_date' 	=> $exp_date,
+						'status_detail' => 'Proses',
+					);
+
+					$add = $this->db->insert('table_pinjaman_detail', $data);
+				}
+			}
+
 			echo json_encode($output);
 
 		} catch (Exception $e) {
 			
+		}
+	}
+
+	// Update Detail
+	public function updateDetail()
+	{
+		try {
+			$output = array('error' => false);
+			date_default_timezone_set('Asia/Jakarta');
+			$timestamp  		= date("Y-m-d H:i:s");
+
+			$date 			= date("Y-m-d");
+			$exp_date  		= date('Y-m-d', strtotime($date. ' + 7 days'));
+
+			$id_detail 		= $this->input->post('id_detail');
+			$no_pinjaman 	= $this->input->post('no_pinjaman');
+			$id_buku 		= $this->input->post('id_buku');
+			$jumlah 		= $this->input->post('qty');
+			$qty_lama 		= $this->input->post('qty_lama');
+			$stok 			= $this->input->post('stok');
+
+			$cek_jumlah = $this->admin->cekQtyDetail($no_pinjaman)->row();
+			$validasi = $this->admin->cekDetail($no_pinjaman, $id_buku)->row();
+			$total = ($cek_jumlah->qty - $qty_lama) + $jumlah;
+
+			if ($cek_jumlah->qty > 3) {
+				$output['error'] = true;
+				$output['message'] = 'Jumlah Maksimal Buku Dipinjam Adalah 3';
+			} else {
+				if ($jumlah > $validasi->stok) {
+					$output['error'] = true;
+					$output['message'] = 'Stok Buku "'.$validasi->nama_buku.'" Hanya Ada '.$stok.'!';
+				} else {
+					if ($total > 3) {
+						$output['error'] = true;
+						$output['message'] = 'Jumlah Maksimal Buku Dipinjam Adalah 3';
+					} else {
+						$data = array(
+							'qty' 			=> $jumlah,
+							'expired_date' 	=> $exp_date,
+						);
+
+						$this->db->where('id_detail', $id_detail);
+						$this->db->update('table_pinjaman_detail', $data);
+
+						$pinjam = array(
+							'total_pinjam' 		=> $total,
+						);
+						$this->db->where('no_pinjaman', $no_pinjaman);
+						$this->db->update('table_pinjaman', $pinjam);
+
+						$output['message'] = 'Data Berhasil Disimpan!';
+					}
+				}
+			}
+
+			echo json_encode($output);
+
+		} catch (Exception $e) {
+
+		}
+	}
+
+	// Delete Detail
+	public function deleteDetail($id)
+	{
+		try {
+			$output = array('error' => false);
+
+			$id_ref = $id;
+			$delete = $this->db->delete('table_pinjaman_detail',['id_detail'=>$id_ref]);
+
+			if ($delete == TRUE) {
+				$output['message'] = 'Data has been deleted!';
+			} else {
+				$output['error'] = true;
+				$output['message'] = 'Data Failed to Delete!';
+			}
+
+			echo json_encode($output);
+		} catch (Exception $e) {
+
+		}
+	}
+
+	// Approve Pinjaman
+	public function approvePinjaman($id)
+	{
+		try {
+			$output = array('error' => false);
+
+			$id_ref = $id;
+			$pinjam = array(
+				'status' 		=> 'Approve by Admin',
+			);
+			$this->db->where('no_pinjaman', $id_ref);
+			$approve = $this->db->update('table_pinjaman', $pinjam);
+
+			if ($approve == TRUE) {
+				$detail = array(
+					'status_detail' 		=> 'Proses',
+				);
+				$this->db->where('no_pinjaman', $id_ref);
+				$approve = $this->db->update('table_pinjaman_detail', $detail);
+
+				$output['message'] = 'Data Berhasil di Approve!';
+			} else {
+				$output['error'] = true;
+				$output['message'] = 'Data Gagal di Approve!';
+			}
+
+			echo json_encode($output);
+		} catch (Exception $e) {
+
+		}
+	}
+
+	// Cancel Pinjaman
+	public function cancelPinjaman($id)
+	{
+		try {
+			$output = array('error' => false);
+
+			$id_ref = $id;
+			$pinjam = array(
+				'status' 		=> 'Cancel by Admin',
+			);
+			$this->db->where('no_pinjaman', $id_ref);
+			$approve = $this->db->update('table_pinjaman', $pinjam);
+
+			if ($approve == TRUE) {
+				$detail = array(
+					'status_detail' 		=> 'Cancel',
+				);
+				$this->db->where('no_pinjaman', $id_ref);
+				$approve = $this->db->update('table_pinjaman_detail', $detail);
+
+				$output['message'] = 'Data Berhasil di Cancel!';
+			} else {
+				$output['error'] = true;
+				$output['message'] = 'Data Gagal di Cancel!';
+			}
+
+			echo json_encode($output);
+		} catch (Exception $e) {
+
+		}
+	}
+
+	// Batal Pinjaman
+	public function batalPinjaman($id)
+	{
+		try {
+			$output = array('error' => false);
+
+			$id_ref = $id;
+			$pinjam = array(
+				'status' 		=> 'Dibatalkan',
+			);
+			$this->db->where('no_pinjaman', $id_ref);
+			$approve = $this->db->update('table_pinjaman', $pinjam);
+
+			if ($approve == TRUE) {
+				$detail = array(
+					'status_detail' 		=> 'Batal',
+				);
+				$this->db->where('no_pinjaman', $id_ref);
+				$approve = $this->db->update('table_pinjaman_detail', $detail);
+
+				$output['message'] = 'Data Berhasil di Cancel!';
+			} else {
+				$output['error'] = true;
+				$output['message'] = 'Data Gagal di Cancel!';
+			}
+
+			echo json_encode($output);
+		} catch (Exception $e) {
+
+		}
+	}
+
+	// Kode Pinjaman
+	public function kodeKembali()
+	{
+		$no_kembali = $this->admin->getKodeKembali();
+		echo $no_kembali;
+	}
+
+	// Add Pengembalian
+	public function addPengembalian()
+	{
+		try {
+			$output = array('error' => false);
+			date_default_timezone_set('Asia/Jakarta');
+			$timestamp  	= date("Y-m-d H:i:s");
+			$date_now  		= date("Y-m-d");
+
+			$no_pinjaman	= $this->input->post('no_pinjaman');
+			$no_kembali 	= $this->input->post('no_kembali');
+			$no_anggota 	= $this->input->post('no_anggota');
+			$jumlah_kembali	= $this->input->post('kembali');
+			$tgl_pinjam		= date('Y-m-d', strtotime($this->input->post('tgl_pinjam')));
+
+			$buku = $this->admin->detail_peminjaman($no_pinjaman);
+			foreach ($buku as $row) {
+
+				$stok = $row->stok + $row->qty;
+				$d_stok = array(
+					'id_buku'		=> $row->id_buku,
+					'stok'			=> $stok,
+				);
+				$data_stok[] = $d_stok;
+
+				$exp_date = date('Y-m-d', strtotime($row->expired_date));
+
+				$start_date = new DateTime($exp_date);
+				$end_date = new DateTime($date_now);
+				$interval = $start_date->diff($end_date);
+				$selisih = intval($interval->days);
+
+				if ($selisih > 0) {
+					$denda = (float)(($selisih * 500) * $row->qty);
+				} else {
+					$denda = (float)(($selisih * 0) * $row->qty);
+				}
+
+				$detail = array(
+					'id_detail' => $row->id_detail,
+					'denda' => $denda,
+					'status_detail' => 'Kembali',
+				);
+				$data_detail[] = $detail;
+			}
+
+			$pinjam = array(
+				'status' 		=> 'Dikembalikan',
+			);
+
+			$pengembalian = array(
+				'no_pengembalian' 	=> $no_kembali,
+				'tgl_kembali' 		=> $timestamp,
+				'no_pinjam' 		=> $no_pinjaman,
+				'no_anggota' 		=> $no_anggota,
+				'jumlah_kembali' 	=> $jumlah_kembali,
+			);
+
+			$detail_kembali = $this->db->update_batch('table_pinjaman_detail', $data_detail, 'id_detail');
+			if ($detail_kembali == TRUE) {
+				$update_stok = $this->db->update_batch('table_buku', $data_stok, 'id_buku');
+				if ($update_stok == TRUE) {
+					$this->db->where('no_pinjaman', $no_pinjaman);
+					$kembali = $this->db->update('table_pinjaman', $pinjam);
+
+					if ($kembali == TRUE) {
+						$approve = $this->db->insert('table_pengembalian', $pengembalian);
+
+						$output['message'] = 'Pinjaman Berhasil Dikembalikan!';
+					} else {
+						$output['error'] = true;
+						$output['message'] = 'Pinjaman Gagal Dikembalikan!';
+					}
+				} else {
+					$output['error'] = true;
+					$output['message'] = 'Pinjaman Gagal Dikembalikan!';
+				}
+			} else {
+				$output['error'] = true;
+				$output['message'] = 'Pinjaman Gagal Dikembalikan!';
+			}
+			
+			
+
+			echo json_encode($output);
+		} catch (Exception $e) {
+
 		}
 	}
 }

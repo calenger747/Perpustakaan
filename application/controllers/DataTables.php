@@ -161,7 +161,7 @@ class DataTables extends CI_Controller {
 		echo json_encode($output);
 	}
 
-	// Data Supplier
+	// Data User
 	public function showUser()
 	{
 		$session = $_POST['id_user'];
@@ -210,7 +210,7 @@ class DataTables extends CI_Controller {
 			data-email="'.$user->email.'"
 			data-level="'.$user->level.'"
 			data-username="'.$user->username.'"
-			data-password="'.$this->encrypt->decode($user->password, $key).'"
+			data-password="'.$this->encryption->decrypt($user->password).'"
 			data-toggle="modal" data-target="#myEditUser"
 			title="Edit Data">
 			<button class="btn btn-sm btn-success"><i class="fa fa-edit"></i></button>
@@ -229,7 +229,7 @@ class DataTables extends CI_Controller {
 		echo json_encode($output);
 	}
 
-	// Data Anggota
+	// Data Supplier
 	public function showSupplier()
 	{
 		$list = $this->admin->datatable_supplier();
@@ -290,4 +290,415 @@ class DataTables extends CI_Controller {
         //output to json format
 		echo json_encode($output);
 	}
+
+	// Data Pinjaman
+	public function showPinjaman()
+	{
+		$list = $this->admin->datatable_pinjaman();
+		$data = array();
+		$no = $_POST['start'];
+		foreach ($list as $pinjaman) {
+			$no++;
+
+			if ($pinjaman->status == 'Pending') {
+				$approve = '<button
+				class="btn btn-xs btn-info approve-pinjaman" 
+				data-toggle="modal"
+				id="id" 
+				data-toggle="modal" 
+				data-no_pinjaman="'.$pinjaman->no_pinjaman.'"
+				data-total_pinjam="'.$pinjaman->total_pinjam.'"
+				title="Approve Pinjaman">
+				<i class="fa fa-check"></i>
+				</button>
+				<button
+				class="btn btn-xs btn-warning cancel-pinjaman" 
+				data-toggle="modal"
+				id="id" 
+				data-toggle="modal" 
+				data-no_pinjaman="'.$pinjaman->no_pinjaman.'"
+				title="Cancel Pinjaman">
+				<i class="fa fa-times"></i>
+				</button>';
+			} else {
+				$approve = '';
+			}
+
+			if ($pinjaman->status == 'Process' || $pinjaman->status == 'Approve by Admin') {
+				$edit = '
+				<a
+				href="'.base_url().'Dashboard_Admin/editPinjaman/'.$pinjaman->no_pinjaman.'"
+				title="Edit Data">
+				<button class="btn btn-xs btn-success"><i class="fa fa-edit"></i></button>
+				</a>';
+			} else {
+				$edit = '
+				<a
+				href="'.base_url().'Dashboard_Admin/detailPinjaman/'.$pinjaman->no_pinjaman.'"
+				title="Detail Data">
+				<button class="btn btn-xs btn-primary"><i class="fa fa-list"></i></button>
+				</a>';
+			}
+
+			if ($pinjaman->status == 'Dipinjam') {
+				$invoice = '<a
+				href="'.base_url().'Dashboard_Admin/cetakInvoice/'.$pinjaman->no_pinjaman.'"
+				title="Cetak Invoice" target="_blank">
+				<button class="btn btn-xs btn-secondary"><i class="fa fa-print"></i></button>
+				</a>';
+			} else {
+				$invoice = '';
+			}
+
+			$row = array();
+			$row[] = $pinjaman->no_pinjaman;
+			$row[] = $pinjaman->nama_anggota;
+			$row[] = $pinjaman->total_pinjam;
+			$row[] = date('d M Y', strtotime($pinjaman->tgl_pinjam));
+			$row[] = $pinjaman->status;
+			$row[] = $invoice.$edit.$approve;
+
+			$data[] = $row;
+		}
+
+		$output = array(
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $this->admin->pinjaman_all(),
+			"recordsFiltered" => $this->admin->pinjaman_filtered(),
+			"data" => $data,
+		);
+        //output to json format
+		echo json_encode($output);
+	}
+
+	// Data Detail Pinjaman
+	public function showDetailCart()
+	{
+		$list = $this->admin->datatable_detail_cart();
+		$data = array();
+		$no = $_POST['start'];
+		foreach ($list as $detail_pinjaman) {
+			$no++;
+			$qty = '<input type="number" value="'.$detail_pinjaman->qty.'" id="qty'.$detail_pinjaman->id_cart.'" name="edit_qty" style="width: 100px;" min="1" max="3" data-id_cart="'.$detail_pinjaman->id_cart.'" data-no_anggota="'.$detail_pinjaman->no_anggota.'" data-id_buku="'.$detail_pinjaman->id_buku.'" data-stok="'.$detail_pinjaman->stok.'" data-qty="'.$detail_pinjaman->qty.'" class="form-control edit-qty">';
+			$row = array();
+			$row[] = $detail_pinjaman->kode_buku;
+			$row[] = $detail_pinjaman->nama_buku;
+			$row[] = $detail_pinjaman->nama_kategori;
+			$row[] = $detail_pinjaman->pengarang;
+			$row[] = $qty;
+			$row[] = '
+			<button type="button"
+			class="btn btn-sm btn-danger hapus-keranjang" 
+			data-toggle="modal" 
+			data-id_cart="'.$detail_pinjaman->id_cart.'"
+			title="Hapus Data">
+			<i class="fa fa-trash"></i>
+			</button>';
+
+			$data[] = $row;
+		}
+
+		$output = array(
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $this->admin->detail_cart_all(),
+			"recordsFiltered" => $this->admin->detail_cart_filtered(),
+			"data" => $data,
+		);
+        //output to json format
+		echo json_encode($output);
+	}
+
+	// Data Detail Pinjaman
+	public function showDetailPinjaman()
+	{
+		$list = $this->admin->datatable_detail_pinjaman();
+		$data = array();
+		$no = $_POST['start'];
+		foreach ($list as $detail_pinjaman) {
+			$no++;
+			$qty = '<input type="number" value="'.$detail_pinjaman->qty.'" id="qty'.$detail_pinjaman->id_detail.'" name="edit_qty" style="width: 100px;" min="1" max="3" data-id_detail="'.$detail_pinjaman->id_detail.'" data-no_pinjaman="'.$detail_pinjaman->no_pinjaman.'" data-id_buku="'.$detail_pinjaman->id_buku.'" data-stok="'.$detail_pinjaman->stok.'" data-qty="'.$detail_pinjaman->qty.'" class="form-control edit-qty">';
+			$row = array();
+			$row[] = $detail_pinjaman->kode_buku;
+			$row[] = $detail_pinjaman->nama_buku;
+			$row[] = $detail_pinjaman->nama_kategori;
+			$row[] = $detail_pinjaman->pengarang;
+			$row[] = $qty;
+			$row[] = '
+			<button type="button"
+			class="btn btn-sm btn-danger hapus-keranjang" 
+			data-toggle="modal" 
+			data-id_detail="'.$detail_pinjaman->id_detail.'"
+			title="Hapus Data">
+			<i class="fa fa-trash"></i>
+			</button>';
+
+			$data[] = $row;
+		}
+
+		$output = array(
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $this->admin->detail_pinjaman_all(),
+			"recordsFiltered" => $this->admin->detail_pinjaman_filtered(),
+			"data" => $data,
+		);
+        //output to json format
+		echo json_encode($output);
+	}
+
+	// Data Detail Pinjaman
+	public function showDetailKembali()
+	{
+		$list = $this->admin->datatable_detail_pinjaman();
+		$data = array();
+		$no = $_POST['start'];
+		foreach ($list as $detail_pinjaman) {
+			$no++;
+			$row = array();
+			$row[] = $detail_pinjaman->kode_buku;
+			$row[] = $detail_pinjaman->nama_buku;
+			$row[] = $detail_pinjaman->nama_kategori;
+			$row[] = $detail_pinjaman->qty;
+			$row[] = $detail_pinjaman->expired_date;
+			$row[] = $detail_pinjaman->status_detail;
+
+			$data[] = $row;
+		}
+
+		$output = array(
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $this->admin->detail_pinjaman_all(),
+			"recordsFiltered" => $this->admin->detail_pinjaman_filtered(),
+			"data" => $data,
+		);
+        //output to json format
+		echo json_encode($output);
+	}
+
+	// Data Pengembalian
+	public function showPengembalian()
+	{
+		$list = $this->admin->datatable_pengembalian();
+		$data = array();
+		$no = $_POST['start'];
+		foreach ($list as $pinjaman) {
+			$no++;
+
+			if ($pinjaman->status == 'Pending') {
+				$approve = '<button
+				class="btn btn-xs btn-info approve-pinjaman" 
+				data-toggle="modal"
+				id="id" 
+				data-toggle="modal" 
+				data-no_pinjaman="'.$pinjaman->no_pinjaman.'"
+				data-total_pinjam="'.$pinjaman->total_pinjam.'"
+				title="Approve Pinjaman">
+				<i class="fa fa-check"></i>
+				</button>
+				<button
+				class="btn btn-xs btn-warning cancel-pinjaman" 
+				data-toggle="modal"
+				id="id" 
+				data-toggle="modal" 
+				data-no_pinjaman="'.$pinjaman->no_pinjaman.'"
+				title="Cancel Pinjaman">
+				<i class="fa fa-times"></i>
+				</button>';
+			} else {
+				$approve = '';
+			}
+
+			if ($pinjaman->status == 'Process' || $pinjaman->status == 'Approve by Admin') {
+				$edit = '
+				<a
+				href="'.base_url().'Dashboard_Admin/editPinjaman/'.$pinjaman->no_pinjaman.'"
+				title="Edit Data">
+				<button class="btn btn-xs btn-success"><i class="fa fa-edit"></i></button>
+				</a>';
+			} else {
+				$edit = '
+				<a
+				href="'.base_url().'Dashboard_Admin/detailPinjaman/'.$pinjaman->no_pinjaman.'"
+				title="Detail Data">
+				<button class="btn btn-xs btn-primary"><i class="fa fa-list"></i></button>
+				</a>';
+			}
+
+			if ($pinjaman->status == 'Dipinjam') {
+				$invoice = '<a
+				href="'.base_url().'Dashboard_Admin/cetakInvoice/'.$pinjaman->no_pinjaman.'"
+				title="Cetak Invoice" target="_blank">
+				<button class="btn btn-xs btn-secondary"><i class="fa fa-print"></i></button>
+				</a>';
+			} else {
+				$invoice = '';
+			}
+
+			if ($pinjaman->status == 'Dikembalikan') {
+				$invoice_kembali = '<a
+				href="'.base_url().'Dashboard_Admin/cetakInvoiceKembali/'.$pinjaman->no_pengembalian.'/'.$pinjaman->no_pinjaman.'"
+				title="Cetak Invoice" target="_blank">
+				<button class="btn btn-xs btn-secondary"><i class="fa fa-print"></i></button>
+				</a>';
+			} else {
+				$invoice_kembali = '';
+			}
+
+			$row = array();
+			$row[] = $pinjaman->no_pengembalian;
+			$row[] = $pinjaman->nama_anggota;
+			$row[] = $pinjaman->no_pinjaman;
+			$row[] = $pinjaman->total_pinjam;
+			$row[] = date('d M Y', strtotime($pinjaman->tgl_pinjam));
+			$row[] = $pinjaman->status;
+			$row[] = $invoice_kembali.$edit.$approve;
+
+			$data[] = $row;
+		}
+
+		$output = array(
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $this->admin->pengembalian_all(),
+			"recordsFiltered" => $this->admin->pengembalian_filtered(),
+			"data" => $data,
+		);
+        //output to json format
+		echo json_encode($output);
+	}
+
+	// Laporan Anggota
+	public function laporanAnggota()
+	{
+		$list = $this->admin->datatable_laporan_anggota();
+		$data = array();
+		$no = $_POST['start'];
+		foreach ($list as $anggota) {
+			$no++;
+
+			$row = array();
+			$row[] = $anggota->tahun;
+			$row[] = $anggota->total;
+			$row[] = $anggota->ktp;
+			$row[] = $anggota->sim;
+			$row[] = $anggota->paspor;
+			$row[] = $anggota->ktm;
+			$row[] = $anggota->reg_1;
+			$row[] = $anggota->reg_2;
+			$row[] = $anggota->reg_3;
+			$row[] = $anggota->pascasarjana;
+			$row[] = $anggota->umum;
+
+			$data[] = $row;
+		}
+
+		$output = array(
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $this->admin->laporan_anggota_all(),
+			"recordsFiltered" => $this->admin->laporan_anggota_filtered(),
+			"data" => $data,
+		);
+        //output to json format
+		echo json_encode($output);
+	}
+
+	// Laporan Buku
+	public function laporanBuku()
+	{
+		$list = $this->admin->datatable_laporan_buku();
+		$data = array();
+		$no = $_POST['start'];
+		foreach ($list as $buku) {
+			$no++;
+
+			$row = array();
+			$row[] = $buku->nama_kategori;
+			$row[] = $buku->jumlah_buku;
+			$row[] = $buku->stok;
+
+			$data[] = $row;
+		}
+
+		$output = array(
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $this->admin->laporan_buku_all(),
+			"recordsFiltered" => $this->admin->laporan_buku_filtered(),
+			"data" => $data,
+		);
+        //output to json format
+		echo json_encode($output);
+	}
+
+	// Laporan Pinjaman
+	public function laporanPinjaman()
+	{
+		$list = $this->admin->datatable_laporan_pinjaman();
+		$data = array();
+		$no = $_POST['start'];
+		foreach ($list as $pinjaman) {
+			$no++;
+
+			$row = array();
+			$row[] = $pinjaman->tahun;
+			$row[] = $pinjaman->jan;
+			$row[] = $pinjaman->feb;
+			$row[] = $pinjaman->mar;
+			$row[] = $pinjaman->apr;
+			$row[] = $pinjaman->mei;
+			$row[] = $pinjaman->jun;
+			$row[] = $pinjaman->jul;
+			$row[] = $pinjaman->agu;
+			$row[] = $pinjaman->sep;
+			$row[] = $pinjaman->okt;
+			$row[] = $pinjaman->nop;
+			$row[] = $pinjaman->des;
+
+			$data[] = $row;
+		}
+
+		$output = array(
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $this->admin->laporan_pinjaman_all(),
+			"recordsFiltered" => $this->admin->laporan_pinjaman_filtered(),
+			"data" => $data,
+		);
+        //output to json format
+		echo json_encode($output);
+	}
+
+	// Laporan Pengembalian
+	public function laporanPengembalian()
+	{
+		$list = $this->admin->datatable_laporan_pengembalian();
+		$data = array();
+		$no = $_POST['start'];
+		foreach ($list as $pinjaman) {
+			$no++;
+
+			$row = array();
+			$row[] = $pinjaman->tahun;
+			$row[] = $pinjaman->jan;
+			$row[] = $pinjaman->feb;
+			$row[] = $pinjaman->mar;
+			$row[] = $pinjaman->apr;
+			$row[] = $pinjaman->mei;
+			$row[] = $pinjaman->jun;
+			$row[] = $pinjaman->jul;
+			$row[] = $pinjaman->agu;
+			$row[] = $pinjaman->sep;
+			$row[] = $pinjaman->okt;
+			$row[] = $pinjaman->nop;
+			$row[] = $pinjaman->des;
+
+			$data[] = $row;
+		}
+
+		$output = array(
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $this->admin->laporan_pengembalian_all(),
+			"recordsFiltered" => $this->admin->laporan_pengembalian_filtered(),
+			"data" => $data,
+		);
+        //output to json format
+		echo json_encode($output);
+	}
+
 }

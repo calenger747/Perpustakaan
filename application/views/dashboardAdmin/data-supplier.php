@@ -124,8 +124,6 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 
-		$(".telp").inputmask({mask:"(999) 999-9999"});
-
 		var base = '<?= base_url(); ?>';
 
 		var supplier = $('#supplier').DataTable({

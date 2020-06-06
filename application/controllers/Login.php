@@ -38,7 +38,7 @@ class Login extends CI_Controller {
 
 			if($data){
 				$key = 'my-perpus-super-secret-key';
-				$decrypt = $this->encrypt->decode($data->password, $key);
+				$decrypt = $this->encryption->decrypt($data->password);
 				if ($password == $decrypt) {
 					$newdata = array(
 						'username'  => $data->username,
@@ -83,13 +83,13 @@ class Login extends CI_Controller {
 						redirect('Login');
 					}
 				} else {
-					$this->session->set_flashdata("notif", "Masukkan Username & Password Dengan Benar");
+					$this->session->set_flashdata("notif", "Masukkan Username & Password Dengan Benar!");
 					redirect('Login');
 				}
 
 			}
 			else{
-				$this->session->set_flashdata("notif", "Masukkan Username & Password Dengan Benar");
+				$this->session->set_flashdata("notif", "Masukkan Username & Password Dengan Benar!");
 				redirect('Login');
 			}
 		} catch(Exception $e) {
@@ -163,7 +163,7 @@ class Login extends CI_Controller {
 
 				$user = array(
 					'username' 		=> $username,
-					'password' 		=> $this->encrypt->encode($password, $key),
+					'password' 		=> $this->encryption->encrypt($password),
 					'nama' 			=> ucwords($nama_anggota),
 					'email' 		=> $email,
 					'level' 		=> '2',

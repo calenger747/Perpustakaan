@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 24, 2020 at 11:42 AM
+-- Generation Time: May 27, 2020 at 05:18 AM
 -- Server version: 10.1.32-MariaDB
 -- PHP Version: 7.0.30
 
@@ -224,7 +224,7 @@ CREATE TABLE `table_user` (
 --
 
 INSERT INTO `table_user` (`id_user`, `username`, `password`, `nama`, `email`, `level`, `no_anggota`, `last_login`, `date_created`) VALUES
-(1, 'admin', 'knC3R9wpKVimdBQuGcUt+52HdFEajzaiYnzsJ1WhOC+yULsNNDEMfhdXBskRrvreCKhlFUMA2/eOchigz3iMIg==', 'Ari Ariyanto', 'ariariyanto0404@gmail.com', '1', NULL, '2020-05-22 16:59:47', '2020-05-19 16:27:00'),
+(1, 'admin', 'WRbLcqAwt07DB41cA4PaOzmqI2RhVKIVb5mej5KqH6R/e5ETwfZ/bf7WgjQuZxGjSnvkvrKfgA9QXw9lI404uw==', 'Ari Ariyanto', 'ariariyanto0404@gmail.com', '1', NULL, '2020-05-27 09:39:38', '2020-05-19 16:27:00'),
 (3, 'andika', 'TDgAw9Uu1dnC8OUFV9PmKE0sRmP5kRUJnFO5zSwTVrb17T/+I4y+qmFUePoG/1JUVmHM8MdONzRtqRrz48yDKw==', 'Andika', 'andika@gmail.com', '2', 'ANG0003-052020', '2020-05-22 14:36:24', '2020-05-22 09:40:45'),
 (5, 'kepala', 'XUWN/18fMnkuoohJRrms7dtFVdHjz7V9SJmF+LEyNNoEyZX4mxCQWzd6cOEsa7Mxvxqpp1JFPw1NroAT3iYWAw==', 'Kepala Perpus', 'kepalaperpus@gmail.com', '3', NULL, NULL, '2020-05-22 14:54:34');
 

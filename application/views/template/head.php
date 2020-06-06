@@ -38,6 +38,7 @@
 
     <script src="<?= base_url(); ?>app-assets/assets/js/libs/jquery-3.1.1.min.js"></script>
 
+
     <script src="https://cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
 
     <link href="<?= base_url(); ?>app-assets/plugins/lightbox/photoswipe.css" rel="stylesheet" type="text/css" />
@@ -45,15 +46,27 @@
 
     <link rel="stylesheet" type="text/css" href="<?= base_url(); ?>app-assets/assets/css/forms/switches.css">
 
-    <script src="<?= base_url(); ?>app-assets/plugins/input-mask/jquery.inputmask.bundle.min.js"></script>
-    <script src="<?= base_url(); ?>app-assets/plugins/input-mask/input-mask.js"></script>
+    <link href="<?= base_url(); ?>app-assets/assets/css/components/tabs-accordian/custom-accordions.css" rel="stylesheet" type="text/css" />
 
     <link rel="stylesheet" type="text/css" href="<?= base_url(); ?>app-assets/plugins/bootstrap-select/bootstrap-select.min.css">
     <script src="<?= base_url(); ?>app-assets/plugins/bootstrap-select/bootstrap-select.min.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="<?= base_url(); ?>app-assets/plugins/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css">
+    <script src="<?= base_url(); ?>app-assets/plugins/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
+
+    <link href="<?= base_url(); ?>app-assets/assets/css/apps/invoice.css" rel="stylesheet" type="text/css" />
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.css" rel="stylesheet">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
+
     <script> window.setTimeout(function() { $(".alert-light-primary").fadeTo(200, 0).slideUp(200, function(){ $(this).remove(); }); }, 3500); </script>
     <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
     <style>
+        #demo_vertical::-ms-clear, #demo_vertical2::-ms-clear { display: none; }
+        input#demo_vertical { border-top-right-radius: 5px; border-bottom-right-radius: 5px; }
+        input#demo_vertical2 { border-top-right-radius: 5px; border-bottom-right-radius: 5px; }
+        
         .select2-container{
             z-index:100000;
         }

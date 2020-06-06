@@ -125,7 +125,7 @@
 
 			$('#editTextUser').html('<div class="spinner-border text-white align-self-center loader-sm "></div>');
 			$.ajax({  
-				url: base + "Dashboard_Admin/editProfile",   
+				url: base + "Laporan/editProfile",   
 				method:"POST",  
 				data:new FormData(this),  
 				contentType: false,  
@@ -167,7 +167,7 @@
 
 			if (confirm == password) {
 				$.ajax({  
-					url: base + "Dashboard_Admin/editPassword",   
+					url: base + "Laporan/editPassword",   
 					method:"POST",  
 					data:new FormData(this),  
 					contentType: false,  
