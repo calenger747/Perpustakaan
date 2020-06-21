@@ -37,4 +37,7 @@
 <script src="<?= base_url(); ?>app-assets/assets/js/apps/invoice.js"></script>
 
 <script src="<?= base_url(); ?>app-assets/assets/js/components/ui-accordions.js"></script>
+
+<script src="<?= base_url(); ?>app-assets/plugins/counter/jquery.countTo.js"></script>
+<script src="<?= base_url(); ?>app-assets/assets/js/components/custom-counter.js"></script>
 <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->

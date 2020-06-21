@@ -61,6 +61,26 @@ $('.ico-counter3').countTo({
     }
 });
 
+var value = $('.ico-counter4').text();
+$('.ico-counter4').countTo({
+    from: 0,
+    to: value,
+    speed: cSpeed,
+    formatter: function (value, options) {
+        return value.toFixed(options.decimals).replace(/\B(?=(?:\d{3})+(?!\d))/g, ',');
+    }
+});
+
+var value = $('.ico-counter5').text();
+$('.ico-counter5').countTo({
+    from: 0,
+    to: value,
+    speed: cSpeed,
+    formatter: function (value, options) {
+        return value.toFixed(options.decimals).replace(/\B(?=(?:\d{3})+(?!\d))/g, ',');
+    }
+});
+
 
 // Circle
 

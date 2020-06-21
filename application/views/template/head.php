@@ -60,6 +60,10 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
 
+    <link href="<?= base_url(); ?>app-assets/assets/css/components/custom-counter.css" rel="stylesheet" type="text/css">
+
+    <link href="<?= base_url(); ?>app-assets/assets/css/elements/custom-pagination.css" rel="stylesheet" type="text/css" />
+
     <script> window.setTimeout(function() { $(".alert-light-primary").fadeTo(200, 0).slideUp(200, function(){ $(this).remove(); }); }, 3500); </script>
     <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
     <style>

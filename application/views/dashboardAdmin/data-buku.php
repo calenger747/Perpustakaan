@@ -189,11 +189,14 @@
 						<div class="row">
 							<div class="col-md-6">
 								<label class="text-dark">Tahun Terbit</label>
-								<div class="row">
+								<div class="input-group">
+									<input type="text" name="edit_tahun" class="form-control date-own" id="edit_tahun" placeholder="Select Year" required="">
+								</div>
+								<!-- <div class="row">
 									<div class="col-md-12">
 										<input id="edit_tahun" name="edit_tahun" value="" class="form-control flatpickr flatpickr-input active" type="text" placeholder="Select Year..">
 									</div>
-								</div>								
+								</div>	 -->							
 							</div>
 							<div class="col-md-6">
 								<label class="text-dark">Gambar</label>
@@ -235,10 +238,16 @@
 		static : true,
 	});
 
-	var f2 = flatpickr(document.getElementById('edit_tahun'), {
-		dateFormat: "Y",
-		static : true,
-	});
+	// var f2 = flatpickr(document.getElementById('edit_tahun'), {
+	// 	dateFormat: "Y",
+	// 	static : true,
+	// });
+
+	$('.date-own').datepicker({
+			minViewMode: 2,
+			format: 'yyyy',
+			autoclose: true
+		});
 
 	CKEDITOR.replace('editor1', {
 		height: 150,
@@ -318,8 +327,8 @@
 		    var b = modal.find('#edit_deskripsi').val(div.data('deskripsi'));
 		    CKEDITOR.instances['edit_deskripsi'].setData(b);
 
-		    modal.find('#edit_kategori').val(kategori).selectpicker('refresh');
-		    modal.find('#edit_supplier').val(supplier).selectpicker('refresh');
+		    modal.find('#edit_kategori').val(kategori);
+		    modal.find('#edit_supplier').val(supplier);
 
 		    // $('#edit_kategori option[value="'+kategori+'"]').attr('selected','selected');
 

@@ -1,4 +1,12 @@
-<div class="row layout-top-spacing layout-spacing">
+<div class="row layout-top-spacing">
+	<div class="col-md-12">
+		<div class="alert alert-warning" role="alert">
+			<span class="text-white"><marquee><strong>Untuk Transaksi Pengembalian, Silahkan Langsung Mendatangi Perpustakaan Bertemu Dengan Admin Dan Membawa Bukti Peminjaman!</strong></marquee></span>
+		</div> 
+	</div>
+</div>
+
+<div class="row layout-spacing">
 	<div class="col-lg-12">
 		<div class="statbox widget box box-shadow">
 			<div class="widget-header">
@@ -10,8 +18,8 @@
 			</div>
 			<div class="widget-content widget-content-area">
 				<div class="form-group">
-					<a href="<?= base_url(); ?>Dashboard_Admin/tambahPinjaman">
-						<button class="btn btn-primary mb-2">Tambah Data</button>
+					<a href="<?= base_url(); ?>Dashboard_User/myCart">
+						<button class="btn btn-primary mb-2">Keranjang Saya</button>
 					</a>
 				</div>
 				<div class="table-responsive mb-4 style-1">
@@ -40,6 +48,8 @@
 	$(document).ready(function(){
 		var base = '<?= base_url(); ?>';
 
+		var no_anggota = '<?= $this->session->userdata('no_anggota'); ?>';
+
 		var pinjaman = $('#pinjaman').DataTable({
 			"lengthMenu": [10, 20, 50],
 			"pageLength": 10,
@@ -47,8 +57,11 @@
 			"processing": true,
 			"order": [[0, "asc" ]],
 			"ajax":{
-				url :  base + 'DataTables/showPinjaman',
+				url :  base + 'DataTables/showPinjamanUser',
 				type : 'POST',
+				data : {
+					no_anggota: no_anggota,
+				}
 			},
 			"columnDefs": [
 			{ 
@@ -58,72 +71,24 @@
 		    ],
 		});
 
-		// Approve Pinjaman
-		$('#pinjaman').on('click','.approve-pinjaman', function(){
+		// Batal Pinjaman
+		$('#pinjaman').on('click','.batal-pinjaman', function(){
 			var id =  $(this).data('no_pinjaman');
-			var total_pinjam =  $(this).data('total_pinjam');
 			swal({
 				title: "Apa anda yakin?",
-				text: "Setelah disetujui, Tidak dapat menambah jumlah buku!",
-				type: "warning",
-				showCancelButton: true,
-				confirmButtonText: 'Approve',
-			}).then(function(result) {
-				if (result.value) {
-					if (total_pinjam == 0) {
-						swal({
-							title: "Failed!",
-							type: "error",
-							text: "Tidak ada buku yang di daftarkan!",
-						});
-					} else {
-						$.ajax({
-							url: base + "Dashboard_Admin/approvePinjaman/" + id,  
-							method: "GET",
-							beforeSend :function() {
-								swal({
-									title: 'Please Wait',
-									html: 'Approving data',
-									onOpen: () => {
-										swal.showLoading()
-									}
-								})      
-							},
-							success:function(data){
-								swal({
-									title: "Deleted!",
-									type: "success",
-									text: "Pinjaman Berhasil di Approve!",
-									timer: 1000,
-									buttons: false,
-								});
-								pinjaman.ajax.reload();
-							}
-						});
-					}
-				}
-			})
-		});
-
-		// Cancel Pinjaman
-		$('#pinjaman').on('click','.cancel-pinjaman', function(){
-			var id =  $(this).data('no_pinjaman');
-			var total_pinjam =  $(this).data('total_pinjam');
-			swal({
-				title: "Apa anda yakin?",
-				text: "Setelah dicancel, Anda tidak dapat melanjutkan transaksi dengan nomor transaksi ini!",
+				text: "Setelah dibatalkan, Anda tidak dapat melanjutkan transaksi dengan nomor transaksi ini!",
 				type: "warning",
 				showCancelButton: true,
 				confirmButtonText: 'Yes',
 			}).then(function(result) {
 				if (result.value) {
 					$.ajax({
-						url: base + "Dashboard_Admin/cancelPinjaman/" + id,  
+						url: base + "Dashboard_User/batalPinjaman/" + id,  
 						method: "GET",
 						beforeSend :function() {
 							swal({
 								title: 'Please Wait',
-								html: 'Cancel pinjaman',
+								html: 'Membatalkan pinjaman',
 								onOpen: () => {
 									swal.showLoading()
 								}
@@ -133,7 +98,7 @@
 							swal({
 								title: "Deleted!",
 								type: "success",
-								text: "Pinjaman Berhasil di Cancel!",
+								text: "Pinjaman Berhasil Dibatalkan!",
 								timer: 1000,
 								buttons: false,
 							});
@@ -143,6 +108,5 @@
 				}
 			})
 		});
-
 	});
 </script>

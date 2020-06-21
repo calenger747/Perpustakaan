@@ -7,6 +7,7 @@ class Dashboard_Kepala extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->model('M_Login', 'login');
+		$this->load->model('M_Admin', 'admin');
 		if ($this->session->has_userdata('logged_in') == TRUE) {
 			if ($this->session->userdata('level_user') == '1') {
 				redirect('Dashboard_Admin');
@@ -43,9 +44,16 @@ class Dashboard_Kepala extends CI_Controller {
 		$css = "";
 		$js = "";
 		$path = "";
+		$get = array(
+			"count_anggota" => $this->admin->count_anggota(),
+			"count_buku" => $this->admin->count_buku(),
+			"count_supplier" => $this->admin->count_supplier(),
+			"count_pinjaman" => $this->admin->count_pinjaman(),
+			"count_pengembalian" => $this->admin->count_pengembalian(),
+		);
 		$data = array(
 			"page" => $this->load("Dashboard Kepala", $path),
-			"content" =>$this->load->view('dashboardKepala/index', false, true)
+			"content" =>$this->load->view('dashboardKepala/index', $get, true)
 		);
 		$this->load->view('template/default_template', $data);
 	}

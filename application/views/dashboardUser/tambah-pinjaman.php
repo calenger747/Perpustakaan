@@ -4,33 +4,20 @@
 			<div class="widget-header">
 				<div class="row">
 					<div class="col-xl-12 col-md-12 col-sm-12 col-12">
-						<h4>Proses Peminjaman</h4>
+						<h4>Keranjang Pinjaman</h4>
 					</div>
 				</div>
 			</div>
 			<div class="widget-content widget-content-area">
 				<form id="formTambah" method="POST" action="#" class="mb-4">
 					<div class="row">
-						<div class="col-md-4">
+						<div class="col-md-6">
 							<div class="form-group">
-								<label class="control-label">No. Pinjaman</label>
-								<input type="text" name="no_pinjaman" id="no_pinjam" class="form-control" value="<?= $pinjaman->no_pinjaman; ?>" readonly>
-							</div>
-						</div>
-						<div class="col-md-4">
-							<div class="form-group">
-								<label class="control-label">Nama Anggota</label>
-								<input type="text" name="no_anggota" id="no_anggota" class="form-control" value="<?= $pinjaman->no_anggota; ?>" readonly>
-							</div>
-						</div>
-						<div class="col-md-4">
-							<div class="form-group">
-								<label class="control-label">Nama Anggota</label>
-								<input type="text" name="nama_anggota" id="nama_anggota" class="form-control" value="<?= $pinjaman->nama_anggota; ?>" readonly>
+								<input type="hidden" name="no_anggota" id="no_anggota" class="form-control" value="<?= $anggota; ?>" readonly>
 							</div>
 						</div>
 					</div>
-					<!-- <div class="form-group">
+					<div class="form-group">
 						<div class="row">
 							<div class="col-md-4">
 								<label class="control-label">Kode Buku</label>
@@ -56,10 +43,9 @@
 								<button type="button" id="btnBuku" class="btn btn-info mt-3"><span id="addTextBuku"></span></button>
 							</div>
 						</div>
-					</div> -->
+					</div>
 					<hr>
 					<div class="table-responsive mb-4 style-1">
-						<h6>Detail Buku</h6>
 						<table id="buku" class="table style-1 table-hover non-hover">
 							<thead>
 								<tr>								
@@ -68,6 +54,7 @@
 									<th width="">Kategori</th>
 									<th width="">Pengarang</th>
 									<th width="20%">QTY</th>
+									<th class="text-center" width="10%">Action</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -89,7 +76,6 @@
 </div>
 <script type="text/javascript">
 	$(document).ready(function(){
-
 		var base = '<?= base_url(); ?>';
 		var no_anggota = $('#no_anggota').val();
 
@@ -100,19 +86,40 @@
 			"processing": true,
 			"order": [[0, "asc" ]],
 			"ajax":{
-				url :  base + 'DataTables/showDetailPinjaman',
+				url :  base + 'DataTables/showDetailCart',
 				type : 'POST',
 				data : function ( data ) {
-					data.no_pinjam = $('#no_pinjam').val();
+					data.no_anggota = $('#no_anggota').val();
 				}
 			},
+			"columnDefs": [
+			{ 
+		        "targets": [ 5 ], //first column / numbering column
+		        "orderable": false, //set not orderable
+		    }
+		    ],
+		});
+
+		$('#btnBuku').prop("disabled", true);
+		$('#kode_buku').change(function(){
+			var kode_buku = $(this).val();
+
+			if (kode_buku == '') {
+				buku.ajax.reload();
+				$('#btnBuku').prop("disabled", true);
+				$('#btnSimpan').prop("disabled", true);
+			} else {
+				buku.ajax.reload();
+				$('#btnBuku').prop("disabled", false);
+				$('#btnSimpan').prop("disabled", false);
+			}
 		});
 
 		$('#kode_buku').change(function(){
 			var id_buku = $(this).val();
 
 			$.ajax({  
-				url: base + "Dashboard_Admin/getNamaBuku",   
+				url: base + "Dashboard_User/getNamaBuku",   
 				method:"POST",  
 				data: {
 					id_buku : id_buku,
@@ -129,15 +136,12 @@
 
 		$('#addTextBuku').html('Tambah');
 		$('#btnBuku').click(function(){
-			var no_pinjaman = $('#no_pinjam').val();
 			var no_anggota = $('#no_anggota').val();
 			var id_buku = $('#kode_buku').val();
 			var qty = $('#jumlah').val();
 			var stok = $('#stok').val();
 
-			if (no_anggota == '') {
-				$('#no_anggota').css("border-color", "red");
-			} else if (id_buku == '') {
+			if (id_buku == '') {
 				$('#kode_buku').css("border-color", "red");
 			} else if (qty == '') {
 				$('#jumlah').css("border-color", "red");
@@ -151,11 +155,11 @@
 			} else {
 				$('#addTextBuku').html('<div class="spinner-border text-white align-self-center loader-sm "></div>');
 				$.ajax({  
-					url: base + "Dashboard_Admin/addDetail",   
+					url: base + "Dashboard_User/addCart",   
 					method:"POST",  
 					data: {
 						id_buku : id_buku,
-						no_pinjaman : no_pinjaman,
+						no_anggota : no_anggota,
 						qty : qty,
 						stok : stok,
 					},    
@@ -192,19 +196,19 @@
 
 		// Ubah Cart
 		$('#buku').on('input','.edit-qty', function(){
-			var id_detail =  $(this).data('id_detail');
-			var no_pinjaman =  $(this).data('no_pinjaman');
+			var id_cart =  $(this).data('id_cart');
+			var no_anggota =  $(this).data('no_anggota');
 			var id_buku =  $(this).data('id_buku');
 			var stok =  $(this).data('stok');
 			var qty_lama =  $(this).data('qty');
 			var qty = $(this).val();
 			$.ajax({  
-				url: base + "Dashboard_Admin/updateDetail",   
+				url: base + "Dashboard_User/updateCart",   
 				method:"POST",  
 				data: {
-					id_detail : id_detail,
+					id_cart : id_cart,
 					id_buku : id_buku,
-					no_pinjaman : no_pinjaman,
+					no_anggota : no_anggota,
 					qty : qty,
 					qty_lama : qty_lama,
 					stok : stok,
@@ -227,7 +231,7 @@
 
 		// Delete Cart
 		$('#buku').on('click','.hapus-keranjang', function(){
-			var id =  $(this).data('id_detail');
+			var id =  $(this).data('id_cart');
 			swal({
 				title: "Apa anda yakin?",
 				text: "Setelah dihapus, Anda tidak dapat mengembalikan data kembali!",
@@ -237,7 +241,7 @@
 			}).then(function(result) {
 				if (result.value) {
 					$.ajax({
-						url: base + "Dashboard_Admin/deleteDetail/" + id,  
+						url: base + "Dashboard_User/deleteCart/" + id,  
 						method: "GET",
 						success:function(data){
 							// swal({
@@ -254,24 +258,22 @@
 			})
 		});
 
-		$('#addTextSimpan').html('Simpan');
+		$('#addTextSimpan').html('Proses');
 		$('#btnSimpan').click(function(){
-			var no_pinjam = $('#no_pinjam').val();
 			var no_anggota = $('#no_anggota').val();
 
 			$('#addTextSimpan').html('<div class="spinner-border text-white align-self-center loader-sm "></div>');
 			$.ajax({  
-				url: base + "Dashboard_Admin/updatePinjaman",   
+				url: base + "Dashboard_User/addPinjaman",   
 				method:"POST",  
 				data: {
-					no_pinjam : no_pinjam,
 					no_anggota : no_anggota,
 				},    
 				dataType: "json",
 				success:function(res)  
 				{  
 					console.log(res.error);
-					$('#addTextSimpan').html('Simpan');
+					$('#addTextSimpan').html('Proses');
 					if(res.error == false){  
 						swal({
 							title: "Success!",
@@ -288,6 +290,11 @@
 							type: "error",
 						});
 					}
+
+					$('#id_buku').val('');
+					$('#nama_buku').val('');
+					$('#jumlah').val('');
+					$('#btnBuku').prop("disabled", true);
 
 					buku.ajax.reload();
 				}  

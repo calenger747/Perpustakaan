@@ -84,6 +84,12 @@ class M_Admin extends CI_Model{
         $this->load->database();
     }
 
+    // Pinjaman Pending
+    public function pending_pinjaman(){
+        $query = $this->db->query("SELECT * FROM table_pinjaman WHERE status = 'Pending' AND notif = '1'");
+        return $query->num_rows();
+    }
+
     // Data Kategori
     public function data_kategori()
     {
@@ -229,9 +235,21 @@ class M_Admin extends CI_Model{
         return $query;
     }
 
+    // Data Detail
+    public function dataDetail($no_anggota) {
+        $query = $this->db->query("SELECT * FROM table_pinjaman_detail AS a JOIN table_pinjaman AS b ON a.no_pinjaman = b.no_pinjaman JOIN table_buku AS c ON a.id_buku = c.id_buku WHERE b.no_anggota = '$no_anggota'");
+        return $query;
+    }
+
     // Data Peminjaman
     public function data_peminjaman($no_pinjaman) {
         $query = $this->db->query("SELECT * FROM table_pinjaman AS a JOIN table_anggota AS b ON a.no_anggota = b.no_anggota WHERE a.no_pinjaman = '$no_pinjaman'");
+        return $query->row();
+    }
+
+    // Data Peminjaman
+    public function data_pengembalian($no_kembali) {
+        $query = $this->db->query("SELECT * FROM table_pengembalian AS a JOIN table_anggota AS b ON a.no_anggota = b.no_anggota JOIN table_pinjaman AS c ON a.no_pinjam = c.no_pinjaman WHERE a.no_pengembalian = '$no_kembali'");
         return $query->row();
     }
 
@@ -241,12 +259,58 @@ class M_Admin extends CI_Model{
         return $query->result();
     }
 
+    // Validasi Peminjaman
+    public function validasiPinjaman($no_anggota) {
+        $query = $this->db->query("SELECT * FROM table_pinjaman WHERE no_anggota = '$no_anggota' AND status='Dipinjam' ");
+        return $query;
+    }
+
     // Data Pinjaman
     public function data_pinjaman()
     {
         $query = $this->db->query("SELECT * FROM table_pinjaman WHERE status='Dipinjam' ORDER BY no_pinjaman ASC");
 
         return $query->result();
+    }
+
+    // Count Anggota
+    public function count_anggota()
+    {
+        $query = $this->db->query("SELECT * FROM table_anggota");
+
+        return $query->num_rows();
+    }
+
+    // Count Buku
+    public function count_buku()
+    {
+        $query = $this->db->query("SELECT * FROM table_buku");
+
+        return $query->num_rows();
+    }
+
+    // Count Supplier
+    public function count_supplier()
+    {
+        $query = $this->db->query("SELECT * FROM table_supplier");
+
+        return $query->num_rows();
+    }
+
+    // Count Pinjaman
+    public function count_pinjaman()
+    {
+        $query = $this->db->query("SELECT * FROM table_pinjaman");
+
+        return $query->num_rows();
+    }
+
+    // Count Pengembalian
+    public function count_pengembalian()
+    {
+        $query = $this->db->query("SELECT * FROM table_pengembalian");
+
+        return $query->num_rows();
     }
 
     private function _get_datatables_query()
@@ -568,6 +632,7 @@ class M_Admin extends CI_Model{
     // Data Pinjaman
     private function pinjaman_query()
     {
+        $this->db->where($this->table_6.".status != 'Dikembalikan'");
         $this->db->from($this->table_6);
         $this->db->join($this->table_6_2, $this->table_6.'.no_anggota ='.$this->table_6_2.'.no_anggota');
         $this->db->order_by('no_pinjaman','DESC');
@@ -624,7 +689,7 @@ class M_Admin extends CI_Model{
 
     public function pinjaman_all()
     {
-
+        $this->db->where($this->table_6.".status != 'Dikembalikan'");
         $this->db->from($this->table_6);
         $this->db->join($this->table_6_2, $this->table_6.'.no_anggota ='.$this->table_6_2.'.no_anggota');
         return $this->db->count_all_results();
@@ -763,6 +828,7 @@ class M_Admin extends CI_Model{
 
     public function detail_cart_all()
     {
+        $this->db->where($this->table_8.'.no_anggota', $this->input->post('no_anggota'));
         $this->db->from($this->table_8);
         $this->db->join($this->table_8_2, $this->table_8.'.no_anggota ='.$this->table_8_2.'.no_anggota');
         $this->db->join($this->table_8_3, $this->table_8.'.id_buku ='.$this->table_8_3.'.id_buku');

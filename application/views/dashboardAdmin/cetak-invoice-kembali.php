@@ -205,8 +205,8 @@
 							<div class="email"><?= $pinjaman->no_hp;?></div>
 						</div>
 						<div class="col invoice-details">
-							<h3 class="invoice-id">INVOICE #<?= $pinjaman->no_pinjaman;?></h3>
-							<div class="date">Date of Invoice: <?= $pinjaman->tgl_pinjam;?></div>
+							<h3 class="invoice-id">INVOICE #<?= $pinjaman->no_pengembalian;?></h3>
+							<div class="date">Date of Invoice: <?= $pinjaman->tgl_kembali;?></div>
 							<div class="date">Due Date: <?= date('Y-m-d');?></div>
 						</div>
 					</div>
@@ -215,8 +215,10 @@
 							<tr>
 								<th>#</th>
 								<th class="text-left">NAMA BUKU</th>
-								<th class="text-left">TANGGAL PINJAM</th>
-								<th class="text-left">QTY</th>
+								<th class="text-left">PERIODE PINJAMAN</th>
+								<th class="text-left">TANGGAL KEMBALI</th>
+								<th class="text-right">DENDA/HARI</th>
+								<th class="text-right">QTY</th>
 								<th class="text-right">DENDA</th>
 							</tr>
 						</thead>
@@ -240,7 +242,9 @@
 										</h6>
 										<?= $row->nama_buku; ?>
 									</td>
-									<td class="text-center"><?= date('d M Y', strtotime($row->expired_date)); ?></td>
+									<td class="text-center"><?= date('d M Y', strtotime($pinjaman->tgl_pinjam)); ?> - <?= date('d M Y', strtotime($row->expired_date)); ?></td>
+									<td class="text-center"><?= date('d M Y', strtotime($pinjaman->tgl_kembali)); ?></td>
+									<td class="qty" class="qty">IDR <?= "500"; ?></td>
 									<td class="qty" class="qty"><?= $row->qty; ?></td>
 									<td class="total">IDR <?= number_format($row->denda, 0, ",", ","); ?></td>
 								</tr>
@@ -250,18 +254,18 @@
 						</tbody>
 						<tfoot>
 							<tr>
-								<td colspan="2"></td>
-								<td colspan="2">JUMLAH ITEM</td>
+								<td colspan="3"></td>
+								<td colspan="3">JUMLAH ITEM</td>
 								<td><?= $total; ?></td>
 							</tr>
 							<tr>
-								<td colspan="2"></td>
-								<td colspan="2">Total Denda</td>
+								<td colspan="3"></td>
+								<td colspan="3">Total Denda</td>
 								<td>IDR <?= number_format($total_denda, 0, ",", ","); ?></td>
 							</tr>
 							<tr>
-								<td colspan="2"></td>
-								<td colspan="2">GRAND TOTAL</td>
+								<td colspan="3"></td>
+								<td colspan="3">GRAND TOTAL</td>
 								<td>IDR <?= number_format(($total_denda), 0, ",", ","); ?></td>
 							</tr>
 						</tfoot>

@@ -6,6 +6,7 @@ class DataTables extends CI_Controller {
 	public function __construct() { 
 		parent::__construct();
 		$this->load->model('M_Admin', 'admin');
+		$this->load->model('M_User', 'user');
 	}
 
 	// Data Kategori Buku
@@ -422,15 +423,8 @@ class DataTables extends CI_Controller {
 			$row[] = $detail_pinjaman->nama_buku;
 			$row[] = $detail_pinjaman->nama_kategori;
 			$row[] = $detail_pinjaman->pengarang;
-			$row[] = $qty;
-			$row[] = '
-			<button type="button"
-			class="btn btn-sm btn-danger hapus-keranjang" 
-			data-toggle="modal" 
-			data-id_detail="'.$detail_pinjaman->id_detail.'"
-			title="Hapus Data">
-			<i class="fa fa-trash"></i>
-			</button>';
+			$row[] = $detail_pinjaman->qty;
+			
 
 			$data[] = $row;
 		}
@@ -695,6 +689,69 @@ class DataTables extends CI_Controller {
 			"draw" => $_POST['draw'],
 			"recordsTotal" => $this->admin->laporan_pengembalian_all(),
 			"recordsFiltered" => $this->admin->laporan_pengembalian_filtered(),
+			"data" => $data,
+		);
+        //output to json format
+		echo json_encode($output);
+	}
+
+	// USER
+	// Data Pinjaman
+	public function showPinjamanUser()
+	{
+		$no_anggota = $this->input->post('no_anggota');
+		$list = $this->user->datatable_pinjaman_user($no_anggota);
+		$data = array();
+		$no = $_POST['start'];
+		foreach ($list as $pinjaman) {
+			$no++;
+
+			$detail = '
+				<a
+				href="'.base_url().'Dashboard_User/detailPinjaman/'.$pinjaman->no_pinjaman.'"
+				title="Detail Data">
+				<button class="btn btn-xs btn-primary"><i class="fa fa-list"></i></button>
+				</a>';
+
+			if ($pinjaman->status == 'Pending' || $pinjaman->status == 'Approve by Admin') {
+				$batal = '<button
+				class="btn btn-xs btn-danger batal-pinjaman" 
+				data-toggle="modal"
+				id="id" 
+				data-toggle="modal" 
+				data-no_pinjaman="'.$pinjaman->no_pinjaman.'"
+				title="Batalkan Pinjaman">
+				<i class="fa fa-times"></i>
+				</button>';
+			} else {
+				$batal='';
+			}
+
+			if ($pinjaman->status == 'Dipinjam') {
+				$invoice = '<a
+				href="'.base_url().'Dashboard_Admin/cetakInvoice/'.$pinjaman->no_pinjaman.'"
+				title="Cetak Invoice" target="_blank">
+				<button class="btn btn-xs btn-secondary"><i class="fa fa-print"></i></button>
+				</a>';
+			} else {
+				$invoice = '';
+			}
+
+			$row = array();
+			$row[] = $pinjaman->no_pinjaman;
+			$row[] = $pinjaman->nama_anggota;
+			$row[] = $pinjaman->total_pinjam;
+			$row[] = date('d M Y', strtotime($pinjaman->tgl_pinjam));
+			$row[] = $pinjaman->status;
+			$row[] = $invoice.$detail.$batal;
+
+			$data[] = $row;
+		}
+
+		$output = array(
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $this->user->user_pinjaman_all($no_anggota),
+			"recordsFiltered" => $this->user->user_pinjaman_filtered($no_anggota),
 			"data" => $data,
 		);
         //output to json format

@@ -8,11 +8,7 @@ class Laporan extends CI_Controller {
 		parent::__construct();
 		$this->load->model('M_Admin', 'admin');
 		$this->load->model('M_Login', 'login');
-		if ($this->session->has_userdata('logged_in') == TRUE) {
-			if ($this->session->userdata('level_user') == '2') {
-				redirect('Dashboard_User');
-			}
-		} else {
+		if ($this->session->has_userdata('logged_in') != TRUE) {
 			redirect('Login');
 		}
 	}
