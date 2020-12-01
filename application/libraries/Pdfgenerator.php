@@ -7,6 +7,7 @@ class Pdfgenerator {
 
   public function generate($html, $filename='', $stream=TRUE, $paper = 'A4', $orientation = "landscape")
   {
+    
     $dompdf = new DOMPDF();
     $dompdf->load_html($html);
     $dompdf->set_paper($paper, $orientation);

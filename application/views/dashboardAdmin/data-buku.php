@@ -161,7 +161,7 @@
 					</div>
 					<div class="form-group">
 						<div class="row">
-							<div class="col-md-6">
+							<div class="col-md-6 1">
 								<label class="text-dark">Kategori</label>
 								<select class="form-control selectpicker" name="edit_kategori" data-live-search="true" size="5" id="edit_kategori" required="">
 									<option value="">Pilih Kategori</option>
@@ -200,7 +200,7 @@
 							</div>
 							<div class="col-md-6">
 								<label class="text-dark">Gambar</label>
-								<input type="file" name="file" class="form-control gambar" accept="image/*" required="">
+								<input type="file" name="file" class="form-control gambar" accept="image/*">
 							</div>
 						</div>
 					</div>
@@ -210,7 +210,7 @@
 								<label class="text-dark">Stok</label>
 								<input type="number" name="edit_stok" id="edit_stok" class="form-control">
 							</div>
-							<div class="col-md-6">
+							<div class="col-md-6 2">
 								<label class="text-dark">Nama Supplier</label>
 								<select class="form-control selectpicker" name="edit_supplier" data-live-search="true" size="5" id="edit_supplier" required="">
 									<option value="">Pilih Supplier</option>
@@ -327,10 +327,22 @@
 		    var b = modal.find('#edit_deskripsi').val(div.data('deskripsi'));
 		    CKEDITOR.instances['edit_deskripsi'].setData(b);
 
-		    modal.find('#edit_kategori').val(kategori);
-		    modal.find('#edit_supplier').val(supplier);
+		    // modal.find('#edit_kategori').val(kategori);
+		    $("#edit_kategori").val(kategori).trigger("change");
+		    // modal.find('#edit_supplier').val(supplier);
+		    $("#edit_supplier").val(supplier).trigger("change");
 
-		    // $('#edit_kategori option[value="'+kategori+'"]').attr('selected','selected');
+		    var text = $("select[name=edit_kategori] option[value='"+kategori+"']").text();
+		    $('.1 .bootstrap-select .filter-option').text(text);
+			//Check the selected attribute for the real select
+			$('select[name=edit_kategori]').val(kategori);
+		    $('#edit_kategori option[value="'+kategori+'"]').attr('selected','selected');
+
+		    var text2 = $("select[name=edit_supplier] option[value='"+supplier+"']").text();
+		    $('.2 .bootstrap-select .filter-option').text(text2);
+			//Check the selected attribute for the real select
+			$('select[name=edit_supplier]').val(supplier);
+		    $('#edit_supplier option[value="'+supplier+'"]').attr('selected','selected');
 
 		    modal.find('#foto').attr("src", "<?php echo base_url(); ?>app-assets/upload/" + dokumen);
 		    modal.find('#edit_stok').attr("value", div.data('stok'));

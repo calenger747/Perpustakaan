@@ -196,7 +196,8 @@ class Dashboard_User extends CI_Controller {
 
 			$cek_jumlah = $this->admin->cekQtyJumlah($no_anggota)->row();
 			$validasi = $this->admin->cekCart($no_anggota, $id_buku)->row();
-			if ($cek_jumlah->qty >= 3) {
+			$sum_qty = $cek_jumlah->qty + $jumlah;
+			if ($sum_qty > 3) {
 				$output['error'] = true;
 				$output['message'] = 'Jumlah Maksimal Buku Dipinjam Adalah 3';
 			} else {
@@ -206,7 +207,7 @@ class Dashboard_User extends CI_Controller {
 						$output['error'] = true;
 						$output['message'] = 'Stok Buku "'.$validasi->nama_buku.'" Hanya Ada '.$stok.'!';
 					} else {
-						if ($qty >= 3) {
+						if ($qty > 3) {
 							$output['error'] = true;
 							$output['message'] = 'Jumlah Maksimal Buku Dipinjam Adalah 3';
 						} else {

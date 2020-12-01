@@ -156,7 +156,7 @@
 						<input type="text" name="edit_no_anggota" class="form-control" id="edit_no_anggota" readonly="" required="">
 					</div>
 					<div class="form-group">
-						<label class="text-dark">Tipe Identitas</label>
+						<label class="text-dark" id="x">Tipe Identitas</label>
 						<select class="form-control" name="edit_tipe" id="edit_tipe" required="">
 							<option value="">Pilih Tipe Identitas</option>
 							<option value="KTP">KTP</option>
@@ -323,17 +323,18 @@
 		    // Isi nilai pada field
 
 		    modal.find('#edit_no_anggota').attr("value", div.data('no_anggota'));
-		    $('#edit_tipe option[value="'+tanda_pengenal+'"]').attr('selected','selected');
+		    $("#edit_tipe").val(tanda_pengenal).trigger("change");
+		    // $('#edit_tipe option[value="'+tanda_pengenal+'"]').attr('selected','selected');
 		    modal.find('#edit_no_identitas').attr("value", div.data('no_identitas'));
 		    modal.find('#edit_nama').attr("value", div.data('nama_anggota'));
 		    
 
-		    $('#edit_kelas option[value="'+kelas+'"]').attr('selected','selected');
-
+		    // $('#edit_kelas option[value="'+kelas+'"]').attr('selected','selected');
+		    $("#edit_kelas").val(kelas).trigger("change");
 		    modal.find('#edit_alamat').html(div.data('alamat'));
 
 		    var select_kelas = $('#edit_kelas').val();
-		    if (select_kelas == '-' || select_kelas == '') {
+		    if (kelas == '-' || kelas == '') {
 		    	$('#edit_fakultas').val("");
 		    	$('#edit_prodi').val("");
 		    	$('#edit_fakultas').prop("readonly", true);

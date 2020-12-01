@@ -261,14 +261,14 @@ class M_Admin extends CI_Model{
 
     // Validasi Peminjaman
     public function validasiPinjaman($no_anggota) {
-        $query = $this->db->query("SELECT * FROM table_pinjaman WHERE no_anggota = '$no_anggota' AND status='Dipinjam' ");
+        $query = $this->db->query("SELECT * FROM table_pinjaman WHERE no_anggota = '$no_anggota' AND (`status`='Dipinjam' OR `status`='Pending' OR `status`='Process' OR `status`='Approve by Admin')");
         return $query;
     }
 
     // Data Pinjaman
     public function data_pinjaman()
     {
-        $query = $this->db->query("SELECT * FROM table_pinjaman WHERE status='Dipinjam' ORDER BY no_pinjaman ASC");
+        $query = $this->db->query("SELECT * FROM table_pinjaman WHERE `status`='Dipinjam' ORDER BY no_pinjaman ASC");
 
         return $query->result();
     }

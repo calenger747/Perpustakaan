@@ -18,7 +18,7 @@
 							</div>
 						</div>
 						<div class="col-md-6">
-							<div class="form-group">
+							<div class="form-group 1">
 								<label class="control-label">No. Pinjaman</label>
 								<select name="no_pinjaman" class="form-control selectpicker" id="no_pinjaman" data-live-search="true" size="5" required="">
 									<option value="">Nomor Pinjam</option>
@@ -174,7 +174,13 @@
 					}
 
 					$('#no_kembali').val('');
-					$('#no_pinjaman').val('');
+
+					var text1 = $("select[name=no_pinjaman] option[value='default']").text();
+				    $('.1 .bootstrap-select .filter-option').text(text1);
+					//Check the selected attribute for the real select
+					$('select[name=no_pinjaman]').val('default');
+				    $('#no_pinjaman option[value="default"]').attr('selected','selected');
+
 					$('#nama_anggota').val('');
 					$('#tgl_pinjam').val('');
 					$('#total_pinjam').val('');

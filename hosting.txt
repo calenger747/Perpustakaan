@@ -1,0 +1,50 @@
+-- Web Hosting Area --
+
+Login My-Perpus
+ - Url: https://newserv.freewha.com/freewha.cpanel
+ - Username: my-perpus.coolpage.biz
+ - Password: Arifans123
+
+FTP My-Perpus
+ - FTP Server/Host: my-perpus.coolpage.biz
+ - FTP Login/Username: my-perpus.coolpage.biz
+ - FTP PassWord: Arifans123
+
+Database 
+ - Mysql Username: 212095
+ - Mysql Password: Arifans123
+
+Database My-Perpus
+ - Host: localhost
+ - Username: 212095
+ - Password: Arifans123
+ - Database: 212095db2
+
+Url
+https://my-perpus.coolpage.biz/
+
+User
+Admin	:
+	  - Username: ari.ariyanto
+	  - Password: dummy123
+Anggota	:
+	  - Username: ari
+	  - Password: ari
+Kepala	:
+	  - Username: kepala
+	  - Password: kepala
+
+----------------------------------------
+
+-- 000webhost --
+
+Url : https://myperpus-ind.000webhostapp.com/
+Name: my-perpus
+Pass: )UK7lff4TE7*rOUUX*o7
+
+Database
+
+username: id15557692_myperpus_user 
+password: |jBJP<w3${%KLe<%
+database: id15557692_myperpus
+

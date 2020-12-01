@@ -17,11 +17,11 @@
 								<input type="text" name="no_pinjaman" id="no_pinjam" class="form-control" value="<?= $no_pinjam; ?>" readonly>
 							</div>
 						</div>
-						<div class="col-md-6">
+						<div class="col-md-6 1">
 							<div class="form-group">
 								<label class="control-label">Nama Anggota</label>
 								<select name="no_anggota" class="form-control selectpicker" id="no_anggota" data-live-search="true" size="5" required="">
-									<option>Pilih Anggota</option>
+									<option value="default">Pilih Anggota</option>
 									<?php foreach ($anggota as $row) { ?>
 										<option value="<?= $row->no_anggota; ?>"><?= $row->nama_anggota; ?></option>
 										<?php
@@ -32,10 +32,10 @@
 					</div>
 					<div class="form-group">
 						<div class="row">
-							<div class="col-md-4">
+							<div class="col-md-4 2">
 								<label class="control-label">Kode Buku</label>
 								<select name="kode_buku" class="form-control selectpicker" id="kode_buku" data-live-search="true" size="5" required="">
-									<option value="">Kode Buku</option>
+									<option value="default">Kode Buku</option>
 									<?php foreach ($buku as $row) { ?>
 										<option value="<?= $row->id_buku; ?>"><?= $row->kode_buku; ?></option>
 										<?php
@@ -153,13 +153,28 @@
 			var qty = $('#jumlah').val();
 			var stok = $('#stok').val();
 
-			if (no_anggota == '') {
-				$('#no_anggota').css("border-color", "red");
-			} else if (id_buku == '') {
-				$('#kode_buku').css("border-color", "red");
-			} else if (qty == '') {
-				$('#jumlah').css("border-color", "red");
-			} else if (stok < qty) {
+			if (no_anggota == '' || no_anggota == 'default') {
+				swal({
+					title: "Failed!",
+					text: "Silahkan Pilih Anggota!",
+					type: "error",
+				});
+			}
+			else if (id_buku == '' || id_buku == 'default') {
+				swal({
+					title: "Failed!",
+					text: "Silahkan Pilih Buku!",
+					type: "error",
+				});
+			}
+			else if (qty == '') {
+				swal({
+					title: "Failed!",
+					text: "Silahkan Masukkan Jumlah!",
+					type: "error",
+				});
+			}
+			else if (stok < qty) {
 				swal({
 					title: "Failed!",
 					text: "Stok Buku Ini Hanya " + stok + "!",
@@ -167,6 +182,8 @@
 				});
 				$('#jumlah').val('1');
 			} else {
+
+				console.log(no_anggota);
 				$('#addTextBuku').html('<div class="spinner-border text-white align-self-center loader-sm "></div>');
 				$.ajax({  
 					url: base + "Dashboard_Admin/addCart",   
@@ -190,7 +207,11 @@
 							// 	timer: 1000,
 							// 	buttons: false,
 							// });
-							$('#kode_buku').val('');
+							var text = $("select[name=kode_buku] option[value='default']").text();
+						    $('.2 .bootstrap-select .filter-option').text(text);
+							//Check the selected attribute for the real select
+							$('select[name=kode_buku]').val('default');
+						    $('#kode_buku option[value="default"]').attr('selected','selected');
 							$('#nama_buku').val('');
 							$('#jumlah').val('');
 						}
@@ -308,8 +329,20 @@
 					}
 
 					$('#no_pinjam').val('');
-					$('#no_anggota').val('');
-					$('#id_buku').val('');
+
+					var text1 = $("select[name=no_anggota] option[value='default']").text();
+				    $('.1 .bootstrap-select .filter-option').text(text1);
+					//Check the selected attribute for the real select
+					$('select[name=no_anggota]').val('default');
+				    $('#no_anggota option[value="default"]').attr('selected','selected');
+					// $('#no_anggota').val('');
+					var text1 = $("select[name=kode_buku] option[value='default']").text();
+				    $('.2 .bootstrap-select .filter-option').text(text1);
+					//Check the selected attribute for the real select
+					$('select[name=kode_buku]').val('default');
+				    $('#kode_buku option[value="default"]').attr('selected','selected');
+					// $('#id_buku').val('');
+
 					$('#nama_buku').val('');
 					$('#jumlah').val('');
 					$('#btnBuku').prop("disabled", true);

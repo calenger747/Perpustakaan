@@ -439,12 +439,6 @@ class Dashboard_Admin extends CI_Controller {
 				$this->load->library('upload', $config); 
 
 				$id_buku 		= $this->input->post("edit_id");
-
-				$_id = $this->db->get_where('table_buku',['id_buku' => $id_buku])->row();
-				if ($_id->gambar != '') {
-					unlink("./app-assets/upload/".$_id->gambar);
-				}
-
 				$kode_buku 		= $this->input->post("edit_kode");
 				$nama_buku 		= $this->input->post("edit_nama");
 				$kategori 		= $this->input->post("edit_kategori");
@@ -454,11 +448,7 @@ class Dashboard_Admin extends CI_Controller {
 				$stok 			= $this->input->post("edit_stok");
 				$id_supplier 	= $this->input->post("edit_supplier");
 
-				if(!$this->upload->do_upload('file')) {  
-					$error =  $this->upload->display_errors(); 
-					echo json_encode(array('message' => $error, 'error' => true));
-				} else {  
-					$data = $this->upload->data();
+				if (empty($_FILES["file"]["name"])) {
 					$data = array(
 						'kode_buku' 	=> $kode_buku,
 						'nama_buku' 	=> ucwords($nama_buku),
@@ -466,7 +456,6 @@ class Dashboard_Admin extends CI_Controller {
 						'pengarang' 	=> $pengarang,
 						'tahun_terbit' 	=> $tahun_terbit,
 						'deskripsi' 	=> $deskripsi,
-						'gambar' 		=> $data['file_name'],
 						'stok' 			=> $stok,
 						'id_supplier' 	=> $id_supplier,
 					);  
@@ -479,7 +468,40 @@ class Dashboard_Admin extends CI_Controller {
 						$arr = array('message' => 'Data Gagal Disimpan', 'error' => true);
 					}
 					echo json_encode($arr);
-				}  
+				} else {
+					$_id = $this->db->get_where('table_buku',['id_buku' => $id_buku])->row();
+					if (!empty($_id->gambar)) {
+						unlink("./app-assets/upload/".$_id->gambar);
+					}
+
+					if(!$this->upload->do_upload('file')) {  
+						$error =  $this->upload->display_errors(); 
+						echo json_encode(array('message' => $error, 'error' => true));
+					} else {  
+						$data = $this->upload->data();
+						$data = array(
+							'kode_buku' 	=> $kode_buku,
+							'nama_buku' 	=> ucwords($nama_buku),
+							'kategori' 		=> $kategori,
+							'pengarang' 	=> $pengarang,
+							'tahun_terbit' 	=> $tahun_terbit,
+							'deskripsi' 	=> $deskripsi,
+							'gambar' 		=> $data['file_name'],
+							'stok' 			=> $stok,
+							'id_supplier' 	=> $id_supplier,
+						);  
+						$update = $this->db->where('kode_buku', $kode_buku);
+						$this->db->update('table_buku', $data);
+
+						if ($update == TRUE) {
+							$arr = array('message' => 'Data Berhasil Disimpan', 'error' => false);
+						} else {
+							$arr = array('message' => 'Data Gagal Disimpan', 'error' => true);
+						}
+						echo json_encode($arr);
+					}  
+				}
+				
 			}
 
 		} catch (Exception $e) {
@@ -877,7 +899,8 @@ class Dashboard_Admin extends CI_Controller {
 
 			$cek_jumlah = $this->admin->cekQtyJumlah($no_anggota)->row();
 			$validasi = $this->admin->cekCart($no_anggota, $id_buku)->row();
-			if ($cek_jumlah->qty >= 3) {
+			$sum_qty = $cek_jumlah->qty + $jumlah;
+			if ($sum_qty > 3) {
 				$output['error'] = true;
 				$output['message'] = 'Jumlah Maksimal Buku Dipinjam Adalah 3';
 			} else {
@@ -887,7 +910,7 @@ class Dashboard_Admin extends CI_Controller {
 						$output['error'] = true;
 						$output['message'] = 'Stok Buku "'.$validasi->nama_buku.'" Hanya Ada '.$stok.'!';
 					} else {
-						if ($qty >= 3) {
+						if ($qty > 3) {
 							$output['error'] = true;
 							$output['message'] = 'Jumlah Maksimal Buku Dipinjam Adalah 3';
 						} else {
@@ -1195,7 +1218,8 @@ class Dashboard_Admin extends CI_Controller {
 
 			$cek_jumlah = $this->admin->cekQtyDetail($no_pinjaman)->row();
 			$validasi = $this->admin->cekDetail($no_pinjaman, $id_buku)->row();
-			if ($cek_jumlah->qty >= 3) {
+			$sum_qty = $cek_jumlah->qty + $jumlah;
+			if ($sum_qty > 3) {
 				$output['error'] = true;
 				$output['message'] = 'Jumlah Maksimal Buku Dipinjam Adalah 3';
 			} else {
